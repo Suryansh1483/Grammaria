@@ -85,7 +85,7 @@ export function CentraliaView({ territory, onClose }: CentraliaViewProps) {
             })}
           </div>
           <AnimatePresence>
-            {isAnswered && <motion.div className={`capital-trial__result ${isCorrect ? "is-correct" : "is-wrong"}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>{isCorrect ? <CheckCircle2 /> : <ShieldAlert />}<div><small>{isCorrect ? "The sovereign acknowledges your answer" : "The gates reject your answer"}</small><strong>{isCorrect ? "A precise strike" : "Study the timeline"}</strong><p>{question.explanation}</p></div><button type="button" onClick={resetTrial}><RotateCcw /> Try again</button></motion.div>}
+            {isAnswered && <motion.div className={`capital-trial__result ${isCorrect ? "is-correct" : "is-wrong"}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>{isCorrect ? <CheckCircle2 /> : <ShieldAlert />}<div><small>{isCorrect ? "The sovereign acknowledges your answer" : "The gates reject your answer"}</small><strong>{isCorrect ? "A precise strike" : "Study the timeline"}</strong><p>{question.explanation}</p></div><button type="button" onClick={resetTrial}><RotateCcw /> Try again</button></motion.div>}
           </AnimatePresence>
         </motion.section>
         <p className="centralia__requirement">Conquer 12 more outer realms to unlock the full siege of Centralia.</p>

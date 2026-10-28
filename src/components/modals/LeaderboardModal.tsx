@@ -16,7 +16,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ onClose }) =
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="relative w-full max-w-xl bg-slate-900 border-2 border-amber-600/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100"
+        className="game-panel rankings-panel relative w-full max-w-xl bg-slate-900 border-2 border-amber-600/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100"
       >
         <div className="p-5 bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b border-amber-600/40 flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -26,12 +26,13 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ onClose }) =
                 Class 10-A Assault Leaderboard
               </h3>
               <p className="text-xs text-amber-200/70">
-                Live Classroom Rankings — Active Assault #4
+                Classroom campaign · Preview standings
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close rankings"
             className="text-amber-400/60 hover:text-amber-200 p-1.5 rounded-lg hover:bg-slate-800"
           >
             <X className="w-5 h-5" />
@@ -49,7 +50,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ onClose }) =
             return (
               <div
                 key={user.rank}
-                className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                className={`ranking-row p-3.5 rounded-xl border flex items-center justify-between transition-all ${
                   isMe
                     ? 'bg-amber-950/70 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
                     : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
@@ -62,7 +63,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ onClose }) =
                   </div>
                   {/* Avatar */}
                   <div className="w-10 h-10 rounded-full bg-slate-900 border border-amber-500/40 flex items-center justify-center text-lg">
-                    {user.avatar}
+                    <Medal aria-hidden="true" className="w-5 h-5 text-amber-300" />
                   </div>
                   {/* Name & Stats */}
                   <div>

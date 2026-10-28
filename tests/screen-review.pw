@@ -1,0 +1,40 @@
+async page => {
+ const check=(v,m)=>{if(!v)throw new Error(m)};
+ const close=async()=>{await page.keyboard.press('Escape');await page.locator('.game-overlay').waitFor({state:'detached'})};
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const width of [1440,390]) {
+  await page.setViewportSize({width,height:width===1440?900:844});
+  await page.goto('http://127.0.0.1:3000');
+  await page.getByRole('button',{name:'Realms',exact:true}).click();
+  for(const name of ['Artikel','Temporalia','Centralia','Concordia']) {
+   await page.locator('.realm-index__entry').filter({has:page.getByText(name,{exact:true})}).click();
+   await page.locator('.atlas-crossing').waitFor({state:'detached'});
+   await page.waitForTimeout(800);
+   await page.screenshot({path:`output/playwright/review-${width}-${name}.png`});
+   if(name==='Concordia') {
+    await page.getByRole('button',{name:'Topic Study Guide'}).click();
+    await page.getByText('Core Grammar Rule',{exact:true}).waitFor();
+    await page.waitForTimeout(200);
+    check(await page.locator('.realm-tab--study').evaluate(el=>getComputedStyle(el).backgroundImage.includes('linear-gradient')), 'Study parchment lost its background');
+    await page.screenshot({path:`output/playwright/review-${width}-study.png`});
+    await page.getByRole('button',{name:'LAUNCH ATTACK',exact:true}).click();
+    await page.getByRole('button',{name:'FIRE ATTACK',exact:true}).waitFor();
+    await page.screenshot({path:`output/playwright/review-${width}-battle.png`});
+   }
+   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}: ${name} overflow`);
+   await close();
+  }
+ }
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:1440,height:900});await page.goto('http://127.0.0.1:3000');
+ await page.getByRole('button',{name:/^Concordia,/}).click();await page.locator('.atlas-crossing').waitFor({state:'detached'});
+ await page.getByRole('button',{name:'LAUNCH ATTACK',exact:true}).click();
+ await page.waitForTimeout(450);await page.screenshot({path:'output/playwright/review-battle-intro.png'});
+ await page.waitForTimeout(700);await page.getByRole('button',{name:'Retreat',exact:true}).click();
+ await page.waitForTimeout(100);
+ check(await page.locator('.game-overlay--battle[data-phase="exit"] .battle-panel').count()===1,'Battle removed before exit');
+ await page.screenshot({path:'output/playwright/review-battle-exit.png'});
+ await page.locator('.game-overlay').waitFor({state:'detached'});
+ await page.goto('http://127.0.0.1:3000');
+ console.log('PASS: desktop and phone special realms, study parchment, battle, cinematic entrance and retained battle exit.');
+}

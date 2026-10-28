@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  agentRules: false,
   turbopack: {
-    root: "C:\\Users\\vikash\\Documents\\grammaria",
+    root: process.cwd(),
   },
 };
 

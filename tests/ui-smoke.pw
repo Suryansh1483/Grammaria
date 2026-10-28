@@ -1,0 +1,84 @@
+// Run against a local server: npx --package @playwright/cli playwright-cli run-code --filename=tests/ui-smoke.pw
+async (page) => {
+  const check = (value, message) => { if (!value) throw new Error(message); };
+  const close = async () => {
+    await page.keyboard.press('Escape');
+    await page.locator('.game-overlay').waitFor({ state: 'detached' });
+  };
+  const openRealm = async (name) => {
+    await page.getByRole('button', { name: new RegExp(`^${name},`) }).click();
+    await page.locator('.game-overlay').waitFor();
+  };
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('http://127.0.0.1:3000');
+  await page.getByRole('button', { name: 'Open commander profile for Arjun Verma' }).click();
+  await page.getByRole('button', { name: 'Grammar Mastery' }).click();
+  await page.getByText('Strong commands', { exact: true }).waitFor();
+  check(await page.getByText('Strong commands', { exact: true }).isVisible(), 'Mastery tab did not open');
+  await page.keyboard.press('Tab');
+  check(await page.locator('.game-overlay').evaluate(root => root.contains(document.activeElement)), 'Focus escaped overlay');
+  await close();
+  check(await page.getByRole('button', { name: 'Open commander profile for Arjun Verma' }).evaluate(element => element === document.activeElement), 'Profile trigger did not regain focus');
+
+  await openRealm('Concordia');
+  await page.getByRole('button', { name: 'Topic Study Guide' }).click();
+  await page.getByText('Core Grammar Rule', { exact: true }).waitFor();
+  check(await page.getByText('Core Grammar Rule', { exact: true }).isVisible(), 'Study guide did not open');
+  await page.getByRole('button', { name: 'LAUNCH ATTACK', exact: true }).click();
+  await page.getByRole('button', { name: 'FIRE ATTACK', exact: true }).waitFor();
+  check(await page.getByRole('button', { name: 'FIRE ATTACK', exact: true }).isDisabled(), 'Unselected attack was enabled');
+  await page.locator('.battle-panel button[aria-pressed]').nth(0).click();
+  await page.getByRole('button', { name: 'FIRE ATTACK', exact: true }).click();
+  check(await page.getByText('65% Remaining', { exact: true }).isVisible(), 'Wrong answer damaged enemy');
+  check(await page.getByText('ATTACK BLOCKED! The enemy parried your move.', { exact: true }).isVisible(), 'Wrong answer feedback missing');
+  await close();
+
+  await openRealm('Concordia');
+  await page.getByRole('button', { name: 'LAUNCH ATTACK', exact: true }).click();
+  await page.getByRole('button', { name: 'FIRE ATTACK', exact: true }).waitFor();
+  check(await page.getByText('65% Remaining', { exact: true }).isVisible(), 'Battle resistance was not reset');
+  for (let strike = 0; strike < 3; strike++) {
+    await page.locator('.battle-panel button[aria-pressed]').nth(1).click();
+    await page.getByRole('button', { name: 'FIRE ATTACK', exact: true }).click();
+    if (strike < 2) await page.getByRole('button', { name: 'NEXT STRIKE', exact: true }).click();
+  }
+  await page.getByText('TERRITORY CAPTURED!', { exact: true }).waitFor();
+  check(await page.getByText('TERRITORY CAPTURED!', { exact: true }).isVisible(), 'Victory screen missing');
+  await page.getByRole('button', { name: 'RETURN TO MAP', exact: true }).click();
+  await page.locator('.game-overlay').waitFor({ state: 'detached' });
+  check(await page.locator('.campaign-progress strong').innerText() === '7 / 18 realms secured', 'Map capture count did not update');
+  check(await page.locator('.commander-resources').innerText().then(text => text.includes('8,450')), 'Victory gold did not update');
+
+  await page.getByRole('button', { name: 'Reward', exact: true }).click();
+  await page.getByRole('button', { name: 'OPEN CHEST', exact: true }).click();
+  check(await page.getByText('TREASURE CLAIMED!', { exact: true }).isVisible(), 'Treasure result missing');
+  await close();
+  check(await page.locator('.commander-resources').innerText().then(text => text.includes('8,950') && text.includes('345')), 'Treasure balances did not update');
+  await page.getByRole('button', { name: 'Daily Quest', exact: true }).click();
+  await page.getByRole('button', { name: 'Claim', exact: true }).first().click();
+  check(await page.getByRole('button', { name: 'Claimed', exact: true }).isDisabled(), 'Quest allowed a duplicate claim');
+  await close();
+
+  for (const name of ['Artikel', 'Temporalia', 'Centralia']) { await openRealm(name); await close(); }
+  for (const name of ['Ranking', 'Assaults']) {
+    await page.getByRole('button', { name, exact: true }).click();
+    await page.locator('.game-panel').waitFor();
+    await close();
+  }
+  await openRealm('Position Point');
+  await page.getByRole('button', { name: 'LAUNCH ATTACK', exact: true }).click();
+  await page.keyboard.press('Escape');
+  await page.locator('.game-overlay').waitFor({ state: 'detached' });
+  check(await page.locator('.game-overlay').count() === 0, 'Interrupted navigation left a stale overlay');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Realms', exact: true }).click();
+  check(await page.locator('.realm-index__entry').count() === 18, 'Mobile index lost territories');
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Mobile page overflows horizontally');
+  check(await page.locator('.atlas-atmosphere').count() === 0, 'Atlas remained after switching to index');
+  await page.getByRole('button', { name: 'Atlas', exact: true }).click();
+  check(await page.locator('.atlas-atmosphere').evaluate(element => getComputedStyle(element).animationName) === 'none', 'Reduced motion still animates');
+  await page.setViewportSize({ width: 320, height: 568 });
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Narrow phone layout overflows');
+  console.log('PASS: profile tabs, focus trap/restore, study guide, wrong answer, fresh battle, victory/progression, treasure, quests, all scene types, mobile index, overflow and reduced motion.');
+}

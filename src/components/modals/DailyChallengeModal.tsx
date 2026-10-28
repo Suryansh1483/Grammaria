@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
 import { BookOpen, Check, CheckCircle2, ChevronRight, Clock3, Coins, Flame, ShieldCheck, Sparkles, Swords, Target, Trophy, X, Zap } from "lucide-react";
 
 interface DailyChallengeModalProps { onClose: () => void; onClaimXP: (amount: number) => void; }
@@ -14,6 +14,9 @@ const quests = [
 
 export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClose, onClaimXP }) => {
   const [claimed, setClaimed] = useState<number[]>([]);
+  const present = useIsPresent();
+  const reduced = useReducedMotion();
+  const compact = "inset(49.5% 0 49.5% 0)";
   const completedCount = quests.filter((quest) => quest.percent === 100).length;
   const claimedXP = quests.filter((quest) => claimed.includes(quest.id)).reduce((sum, quest) => sum + quest.xp, 0);
 
@@ -26,8 +29,10 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClos
   return (
     <div className="quest-board" role="dialog" aria-modal="true" aria-label="Daily grammar quests">
       <div className="quest-board__backdrop" />
-      <motion.section initial={{ opacity: 0, y: 34, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: .97 }} className="quest-scroll">
+      <section className="quest-scroll" data-phase={present ? "enter" : "exit"}>
+        <motion.div className="quest-scroll__paper" aria-hidden="true" initial={{ clipPath: reduced ? "inset(0)" : compact }} animate={{ clipPath: "inset(0)" }} exit={{ clipPath: reduced ? "inset(0)" : compact }} transition={{ duration: reduced ? .08 : .6, ease: [.65, 0, .25, 1] }} />
         <span className="quest-scroll__rod quest-scroll__rod--top" /><span className="quest-scroll__rod quest-scroll__rod--bottom" />
+        <motion.div className="quest-scroll__ink" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: .12 } }} transition={{ delay: reduced ? 0 : .32, duration: .22 }}>
         <button type="button" onClick={onClose} className="quest-board__close" aria-label="Close daily quests"><X /></button>
 
         <header className="quest-board__header">
@@ -52,7 +57,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClos
                 <div className="quest-card__number">0{index + 1}</div>
                 <div className="quest-card__crest"><Icon /></div>
                 <div className="quest-card__copy">
-                  <small>{quest.tier}</small><h3>{quest.title}</h3><p>{quest.desc}</p>
+                  <h3>{quest.title}</h3><small>{quest.tier}</small><p>{quest.desc}</p>
                   <div className="quest-card__progress"><div><span style={{ width: `${quest.percent}%` }} /></div><strong>{quest.progress}</strong></div>
                 </div>
                 <div className="quest-card__reward">
@@ -69,12 +74,13 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClos
 
         <AnimatePresence>
           {claimed.length === completedCount && completedCount > 0 && (
-            <motion.div className="quest-bonus" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div className="quest-bonus" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
               <ShieldCheck /><div><small>Daily campaign complete</small><strong>Royal bonus unlocked</strong><p>Return tomorrow to extend your streak and receive new orders.</p></div><span><Sparkles /> +1 Streak</span>
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.section>
+        </motion.div>
+      </section>
     </div>
   );
 };

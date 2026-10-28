@@ -1,0 +1,113 @@
+// npx --package @playwright/cli playwright-cli run-code --filename=tests/atlas-interactions.pw
+async (page) => {
+  const check = (value, message) => { if (!value) throw new Error(message); };
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const level = () => page.getByLabel('Zoom level').innerText();
+  const settle = () => page.waitForTimeout(340);
+  const close = async () => { await page.keyboard.press('Escape'); await page.locator('.game-overlay').waitFor({ state: 'detached' }); };
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('http://127.0.0.1:3000');
+  await page.waitForFunction(() => [...document.querySelectorAll('.atlas-region img')].every(image => image.complete && image.naturalWidth > 0));
+  check(await page.locator('.atlas-region').count() === 18, 'Not all region sprites rendered');
+  check(await page.locator('.atlas-lift-beds > polygon').count() === 18, 'Original state concealment is incomplete');
+  check(await page.locator('.atlas-original-map').getAttribute('src') === '/map-bg-ornate.jpg', 'Original atlas artwork was replaced');
+  check(await page.locator('.atlas-region__relief img').evaluateAll(images => images.every(image => getComputedStyle(image).opacity === '0')), 'Resting overlays must leave the original map intact');
+  check(await page.getByRole('button', { name: 'Zoom out', exact: true }).isDisabled(), 'Minimum zoom not enforced');
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  check(await level() === '125%', 'Zoom in did not change the camera');
+  await page.getByRole('button', { name: 'Zoom out', exact: true }).click();
+  check(await level() === '100%', 'Zoom out did not restore fit');
+  await settle();
+
+  const names = await page.locator('.atlas-region__hit').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+  for (const name of names) {
+    const button = page.getByRole('button', { name, exact: true });
+    const region = button.locator('..');
+    const restingBounds = await button.boundingBox();
+    await button.hover();
+    await page.waitForTimeout(280);
+    check(await region.evaluate(element => element.classList.contains('is-hovered')), `Whole-region hover missing: ${name}`);
+    check(await region.evaluate(element => getComputedStyle(element).filter.includes('brightness')), `Illustration did not receive lighting: ${name}`);
+    check(await region.locator('img').evaluate(image => Number(getComputedStyle(image).opacity) > .99), `Separated illustration did not appear: ${name}`);
+    const hoverBounds = await button.boundingBox();
+    check(Math.abs(restingBounds.x - hoverBounds.x) < .1 && Math.abs(restingBounds.y - hoverBounds.y) < .1, `Hover moved its hit area: ${name}`);
+    check(await page.locator('.atlas-lift-beds > polygon.is-visible').count() === 1, `Flat artwork was not concealed: ${name}`);
+  }
+  await page.getByRole('heading', { name: 'Grammaria', exact: true }).hover();
+  await settle();
+  check(await page.locator('.atlas-region.is-hovered').count() === 0, 'Hover did not clear');
+  check(await page.locator('.atlas-lift-beds > polygon.is-visible').count() === 0, 'Original atlas was not restored');
+  check(await page.locator('.atlas-region__relief img').evaluateAll(images => images.every(image => getComputedStyle(image).opacity === '0')), 'Hover-out did not restore the original map');
+
+  const concordia = page.getByRole('button', { name: /^Concordia,/ });
+  await concordia.click();
+  await page.locator('.atlas-crossing').waitFor();
+  check(await page.locator('.atlas-region.is-selected').count() === 1, 'Selection did not affect the illustration');
+  await page.keyboard.press('Escape');
+  await page.locator('.atlas-crossing').waitFor({ state: 'detached' });
+  check(await page.locator('.game-overlay').count() === 0, 'Cancelled travel still opened a destination');
+
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  await settle();
+  await concordia.click();
+  await page.locator('.atlas-crossing').waitFor({ state: 'detached' });
+  await page.getByRole('button', { name: 'LAUNCH ATTACK', exact: true }).waitFor();
+  check(await page.locator('.game-overlay').count() === 1, 'Travel created duplicate scenes');
+  await close();
+  check(await level() === '125%', 'Returning to atlas lost zoom');
+  check(await concordia.evaluate(element => element === document.activeElement), 'Returning from travel lost keyboard focus');
+
+  const viewport = page.locator('.atlas-viewport');
+  await viewport.hover({ position: { x: 50, y: 50 } });
+  await page.mouse.wheel(0, -100000);
+  await page.waitForFunction(() => document.querySelector('[aria-label="Zoom level"]').textContent === '400%');
+  check(await page.getByRole('button', { name: 'Zoom in', exact: true }).isDisabled(), 'Maximum zoom not enforced');
+  await settle();
+  const bounds = await viewport.boundingBox();
+  const before = await page.locator('.atlas-world').evaluate(element => element.style.transform);
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 110, bounds.y + bounds.height / 2 + 70, { steps: 8 });
+  await page.mouse.up();
+  await settle();
+  const after = await page.locator('.atlas-world').evaluate(element => element.style.transform);
+  check(before !== after, 'Dragging did not pan the zoomed map');
+  check(await page.locator('.game-overlay').count() === 0 && await page.locator('.atlas-crossing').count() === 0, 'Drag accidentally selected a region');
+  await page.getByRole('button', { name: 'Reset atlas view', exact: true }).click();
+  await settle();
+  check(await level() === '100%', 'Reset failed');
+  await viewport.focus();
+  await page.keyboard.press('+');
+  check(await level() === '125%', 'Keyboard zoom failed');
+  await page.keyboard.press('r');
+  check(await level() === '100%', 'Keyboard reset failed');
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await settle();
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  check(await level() === '125%', 'Phone zoom failed');
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Phone layout overflows');
+  const touch = await page.context().newCDPSession(page);
+  const phoneBounds = await viewport.boundingBox();
+  const cx = phoneBounds.x + phoneBounds.width / 2;
+  const cy = phoneBounds.y + phoneBounds.height / 2;
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: cx - 30, y: cy, id: 1 }, { x: cx + 30, y: cy, id: 2 }] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: cx - 70, y: cy, id: 1 }, { x: cx + 70, y: cy, id: 2 }] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await settle();
+  check(parseInt(await level()) > 125, 'Two-finger pinch did not zoom');
+  check(await page.locator('.atlas-crossing').count() === 0, 'Pinch accidentally selected a region');
+  await touch.detach();
+  await page.getByRole('button', { name: 'Realms', exact: true }).click();
+  check(await page.locator('.realm-index__entry').count() === 18, 'Phone index lost a realm');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: /^Artikel Articles/ }).click();
+  await page.locator('.atlas-crossing').waitFor({ state: 'detached' });
+  check(await page.getByRole('button', { name: 'World Map', exact: true }).isVisible(), 'Reduced-motion travel did not open the realm');
+  check(await page.locator('.atlas-crossing__cloud').count() === 0, 'Reduced motion still plays clouds');
+  await close();
+  if (errors.length) throw new Error(errors.join('\n'));
+  console.log('PASS: all 18 illustrated hover targets, hover-out, selection, cancelled travel, zoom limits, wheel, drag without selection, reset, keyboard, return position/focus, phone layout and reduced motion.');
+}

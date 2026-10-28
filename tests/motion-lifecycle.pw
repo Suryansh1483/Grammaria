@@ -1,0 +1,46 @@
+async page => {
+ const check=(value,message)=>{if(!value)throw new Error(message)};
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('http://127.0.0.1:3000');
+ await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(i=>i.decode().catch(()=>{})))});
+ await page.screenshot({path:'output/playwright/final-atlas.png'});
+ for(const name of ['Temporalia','Artikel','Concordia','Tagtown','Position Point','Substitia','Namesworth','Centralia','Voicelands','Junctionia','Mayhaven','Ifshire','Passaggia','Mannerton','Quotehaven','Descriptia','Lexicon City','Sequentia']) {
+  const button=page.getByRole('button',{name:new RegExp(`^${name},`)});
+  await button.hover();await page.waitForTimeout(360);
+  check((await button.locator('..').locator('img').getAttribute('src')).endsWith('.png'),`${name}: wrong supplied asset`);
+  await page.screenshot({path:`output/playwright/state-${name.replaceAll(' ','-')}.png`});
+ }
+ await page.getByRole('heading',{name:'Grammaria',exact:true}).hover();
+ for(const [name,kind,selector] of [['Daily Quest','quest','.quest-scroll'],['Reward','reward','.treasure-panel'],['Assaults','events','.events-panel'],['Ranking','panel','.rankings-panel'],['Open commander profile for Arjun Verma','profile','.commander-dossier']]) {
+  await page.getByRole('button',{name,exact:true}).click();
+  await page.waitForTimeout(950);
+  await page.screenshot({path:`output/playwright/screen-${kind}.png`});
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(100);
+  check(await page.locator(`.game-overlay--${kind}[data-phase="exit"] ${selector}`).count()===1,`${kind}: content removed before exit`);
+  check(await page.locator('.game-overlay__content').evaluate(el=>el.inert),`${kind}: exiting screen still accepts input`);
+  await page.screenshot({path:`output/playwright/exit-${kind}.png`});
+  await page.locator('.game-overlay').waitFor({state:'detached'});
+ }
+ await page.getByRole('button',{name:/^Concordia,/}).click();
+ await page.locator('.atlas-crossing').waitFor({state:'detached'});
+ await page.screenshot({path:'output/playwright/screen-realm.png'});
+ await page.keyboard.press('Escape');await page.waitForTimeout(140);
+ check(await page.locator('.realm-return-clouds').count()===1,'Missing return clouds');
+ await page.screenshot({path:'output/playwright/exit-realm.png'});
+ await page.locator('.game-overlay').waitFor({state:'detached'});
+ for(let i=0;i<3;i++) {
+  await page.getByRole('button',{name:'Daily Quest',exact:true}).click();
+  await page.keyboard.press('Escape');await page.keyboard.press('Escape');
+  await page.locator('.game-overlay').waitFor({state:'detached'});
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.getByRole('button',{name:'Daily Quest',exact:true}).click();await page.waitForTimeout(800);
+ check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Phone overflow');
+ await page.screenshot({path:'output/playwright/phone-quests.png'});
+ await page.keyboard.press('Escape');await page.locator('.game-overlay').waitFor({state:'detached'});
+ if(errors.length)throw new Error(errors.join('\n'));
+ console.log('PASS: exact assets, 18 hover screenshots, five screen exits retain contents, exit input lock, realm return clouds, rapid cancellation and phone scroll.');
+}

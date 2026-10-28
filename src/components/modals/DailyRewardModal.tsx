@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X, Gift, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, Gift, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
@@ -17,8 +17,10 @@ export const DailyRewardModal: React.FC<DailyRewardModalProps> = ({
   const [claimed, setClaimed] = useState(false);
 
   const handleOpenChest = () => {
+    if (claimed) return;
     setClaimed(true);
     confetti({
+      disableForReducedMotion: true,
       particleCount: 120,
       spread: 80,
       origin: { y: 0.6 }
@@ -32,7 +34,7 @@ export const DailyRewardModal: React.FC<DailyRewardModalProps> = ({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="relative w-full max-w-md bg-slate-900 border-2 border-amber-500/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100 text-center"
+        className={`game-panel treasure-panel ${claimed ? 'is-claimed' : ''} relative w-full max-w-md bg-slate-900 border-2 border-amber-500/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100 text-center`}
       >
         <div className="p-4 bg-amber-950/60 border-b border-amber-600/40 flex justify-between items-center">
           <span className="font-cinzel font-bold text-amber-200 text-sm">
@@ -40,6 +42,7 @@ export const DailyRewardModal: React.FC<DailyRewardModalProps> = ({
           </span>
           <button
             onClick={onClose}
+            aria-label="Close daily treasure"
             className="text-amber-400/60 hover:text-amber-200 p-1"
           >
             <X className="w-5 h-5" />
@@ -48,11 +51,12 @@ export const DailyRewardModal: React.FC<DailyRewardModalProps> = ({
 
         <div className="p-8 space-y-6">
           <motion.div
+            aria-hidden="true"
+            className="treasure-emblem"
             animate={claimed ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] } : { y: [0, -8, 0] }}
             transition={{ duration: 2, repeat: claimed ? 0 : Infinity }}
-            className="w-24 h-24 mx-auto bg-gradient-to-b from-amber-600 to-yellow-600 border-4 border-amber-300 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.6)]"
           >
-            <Gift className="w-12 h-12 text-slate-950" />
+            <Gift />
           </motion.div>
 
           {claimed ? (

@@ -75,7 +75,6 @@ export function SpecialTerritoryView({ territory, onClose, onStartAttack }: Spec
         <div className={`territory-screen__content ${dialogueStep < theme.dialogue.length ? "is-introducing" : ""}`}>
           <motion.header initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: .1 }}>
             <div className="territory-crest"><Crest /><span className="territory-crest__ring" /></div>
-            <p>{theme.kicker}</p>
             <h2>{territory.name}</h2>
             <span className="territory-alias">{territory.alias}</span>
             <div className="territory-status"><ShieldCheck /> Territory secured · Level {territory.levelRequired}</div>
@@ -83,8 +82,8 @@ export function SpecialTerritoryView({ territory, onClose, onStartAttack }: Spec
 
           <motion.div className="territory-command" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: dialogueStep >= theme.dialogue.length ? 1 : .2 }} transition={{ delay: .2 }}>
             <nav>
-              <button type="button" onClick={() => setSection("overview")} className={section === "overview" ? "is-active" : ""}><Sparkles /> Overview</button>
-              <button type="button" onClick={() => setSection("academy")} className={section === "academy" ? "is-active" : ""}><BookOpen /> Academy</button>
+              <button type="button" onClick={() => setSection("overview")} aria-pressed={section === "overview"} className={section === "overview" ? "is-active" : ""}><Sparkles /> Overview</button>
+              <button type="button" onClick={() => setSection("academy")} aria-pressed={section === "academy"} className={section === "academy" ? "is-active" : ""}><BookOpen /> Academy</button>
             </nav>
 
             <AnimatePresence mode="wait">

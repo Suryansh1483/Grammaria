@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
+import { GameOverlay } from '@/components/GameOverlay';
+import { AtlasTransition } from '@/components/AtlasTransition';
 import { WorldMap } from '@/components/WorldMap';
 import { HeaderHUD } from '@/components/HeaderHUD';
 import { SidebarActions } from '@/components/SidebarActions';
@@ -26,11 +29,25 @@ export default function Home() {
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isEventsOpen, setIsEventsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [travellingTo, setTravellingTo] = useState<Territory | null>(null);
+  const travelLocked = useRef(false);
+  const travelFocus = useRef<HTMLElement | null>(null);
 
   // Handle Territory Click from Map
   const handleSelectTerritory = (t: Territory) => {
-    setSelectedTerritory(t);
+    if (travelLocked.current) return;
+    travelFocus.current = document.activeElement as HTMLElement | null;
+    travelLocked.current = true;
+    setTravellingTo(t);
   };
+  const revealTerritory = useCallback((territory: Territory) => setSelectedTerritory(territory), []);
+  const finishTravel = useCallback(() => { travelLocked.current = false; setTravellingTo(null); }, []);
+  const cancelTravel = useCallback(() => {
+    travelLocked.current = false;
+    setTravellingTo(null);
+    setSelectedTerritory(null);
+    window.requestAnimationFrame(() => travelFocus.current?.focus());
+  }, []);
 
   // Handle Launching Attack Session
   const handleStartAttack = (t: Territory) => {
@@ -85,12 +102,33 @@ export default function Home() {
     }));
   };
 
+  const closeScreen = () => {
+    setSelectedTerritory(null);
+    setAttackTerritory(null);
+    setIsDailyChallengeOpen(false);
+    setIsDailyRewardOpen(false);
+    setIsLeaderboardOpen(false);
+    setIsEventsOpen(false);
+    setIsProfileOpen(false);
+  };
+  const screen = attackTerritory ? 'battle' : selectedTerritory ? `realm-${selectedTerritory.id}` :
+    isDailyChallengeOpen ? 'quests' : isDailyRewardOpen ? 'treasure' : isLeaderboardOpen ? 'rankings' :
+    isEventsOpen ? 'events' : isProfileOpen ? 'profile' : null;
+  const kind = attackTerritory ? 'battle' : selectedTerritory?.id === 'centralia' ? 'capital' :
+    selectedTerritory ? 'realm' : isProfileOpen ? 'profile' : isDailyChallengeOpen ? 'quest' : isDailyRewardOpen ? 'reward' : isEventsOpen ? 'events' : 'panel';
+  const screenLabel = attackTerritory ? `${attackTerritory.name} battle` : selectedTerritory ? `${selectedTerritory.name} realm` :
+    isDailyChallengeOpen ? 'Daily quests' : isDailyRewardOpen ? 'Daily treasure' : isLeaderboardOpen ? 'Class rankings' :
+    isEventsOpen ? 'Classroom assaults' : 'Commander profile';
+
   return (
-    <main className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
+    <MotionConfig reducedMotion="user" transition={{ duration: .28, ease: [.22, 1, .36, 1] }}>
+    <main className="game-shell">
+      <div inert={screen !== null || travellingTo !== null}>
       {/* Fixed Top HUD */}
       <HeaderHUD
         player={player}
         onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenRewards={() => setIsDailyRewardOpen(true)}
       />
 
       {/* Fixed Left Sidebar Actions */}
@@ -105,21 +143,27 @@ export default function Home() {
       <WorldMap
         territories={territories}
         onSelectTerritory={handleSelectTerritory}
+        selectedTerritoryId={travellingTo?.id ?? selectedTerritory?.id ?? attackTerritory?.id}
+        isTravelling={travellingTo !== null}
       />
+      </div>
+
+      <AnimatePresence mode="wait">
+      {screen && <GameOverlay key={screen} label={screenLabel} kind={kind} onClose={closeScreen} inputLocked={travellingTo !== null} title={attackTerritory?.name} territoryId={attackTerritory?.id} returnFocus={selectedTerritory || attackTerritory ? travelFocus : undefined}>
 
       {/* Territory Detail & War Command Modal */}
-      <TerritoryModal
+      {selectedTerritory && !attackTerritory && <TerritoryModal
         territory={selectedTerritory}
         onClose={() => setSelectedTerritory(null)}
         onStartAttack={handleStartAttack}
-      />
+      />}
 
       {/* Live Interactive Attack Battle Session Modal */}
-      <AttackModal
+      {attackTerritory && <AttackModal
         territory={attackTerritory}
         onClose={() => setAttackTerritory(null)}
         onTerritoryCaptured={handleTerritoryCaptured}
-      />
+      />}
 
       {/* Daily Challenge Modal */}
       {isDailyChallengeOpen && (
@@ -154,6 +198,10 @@ export default function Home() {
           onClose={() => setIsProfileOpen(false)}
         />
       )}
+      </GameOverlay>}
+      </AnimatePresence>
+      {travellingTo && <AtlasTransition territory={travellingTo} onCovered={revealTerritory} onComplete={finishTravel} onCancel={cancelTravel} />}
     </main>
+    </MotionConfig>
   );
 }

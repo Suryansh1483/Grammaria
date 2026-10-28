@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Territory, GrammarQuestion } from '@/types/game';
-import { X, Swords, ShieldAlert, CheckCircle, XCircle, Award, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Swords, ShieldAlert, CheckCircle, XCircle, ArrowRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
@@ -22,8 +22,6 @@ export const AttackModal: React.FC<AttackModalProps> = ({
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [enemyHealth, setEnemyHealth] = useState(territory?.enemyControl || 80);
-  const [sessionXP, setSessionXP] = useState(0);
-  const [sessionCoins, setSessionCoins] = useState(0);
   const [isVictorious, setIsVictorious] = useState(false);
 
   if (!territory) return null;
@@ -44,7 +42,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
   };
 
   const handleFireAttack = () => {
-    if (selectedOption === null) return;
+    if (selectedOption === null || isAnswered || isVictorious) return;
 
     const correct = selectedOption === currentQuestion.correctAnswerIndex;
     setIsAnswered(true);
@@ -55,14 +53,10 @@ export const AttackModal: React.FC<AttackModalProps> = ({
       const newHealth = Math.max(0, enemyHealth - damage);
       setEnemyHealth(newHealth);
 
-      const xpGained = territory.xpReward / 2;
-      const coinsGained = territory.coinsReward / 2;
-      setSessionXP(prev => prev + xpGained);
-      setSessionCoins(prev => prev + coinsGained);
-
       if (newHealth === 0) {
         setIsVictorious(true);
         confetti({
+          disableForReducedMotion: true,
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 }
@@ -85,28 +79,29 @@ export const AttackModal: React.FC<AttackModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-lg">
+      <div className="battle-scene fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-lg">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-3xl bg-slate-950 border-2 border-amber-600/80 rounded-2xl shadow-[0_0_60px_rgba(245,158,11,0.2)] overflow-hidden text-slate-100"
+          className="game-panel battle-panel relative w-full max-w-3xl bg-slate-950 border-2 border-amber-600/80 rounded-2xl shadow-[0_0_60px_rgba(245,158,11,0.2)] overflow-hidden text-slate-100"
         >
           {/* Top Battle HUD */}
           <div className="p-4 bg-slate-900 border-b border-amber-600/40 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Swords className="w-6 h-6 text-rose-500 animate-pulse" />
               <div>
-                <span className="text-[10px] text-amber-400 font-mono uppercase tracking-widest">
-                  ACTIVE BATTLE — {territory.name}
-                </span>
                 <h3 className="font-cinzel font-black text-lg text-amber-100">
                   Target: Reduce Enemy Resistance to 0%
                 </h3>
+                <span className="battle-context text-amber-400">
+                  {territory.name} · {currentQuestion.difficulty} challenge
+                </span>
               </div>
             </div>
             <button
               onClick={onClose}
+              aria-label="Close battle"
               className="text-amber-400/60 hover:text-amber-200 p-1.5 rounded-lg hover:bg-slate-800"
             >
               <X className="w-5 h-5" />
@@ -130,9 +125,10 @@ export const AttackModal: React.FC<AttackModalProps> = ({
 
           {/* Question & Attack Area */}
           <div className="p-6 space-y-6 max-h-[65vh] overflow-y-auto">
+            <AnimatePresence mode="wait" initial={false}>
             {isVictorious ? (
-              <div className="text-center py-8 space-y-4">
-                <div className="w-20 h-20 mx-auto bg-amber-500/20 border-2 border-amber-400 rounded-full flex items-center justify-center animate-bounce">
+              <motion.div key="victory" className="text-center py-8 space-y-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <div className="w-20 h-20 mx-auto bg-amber-500/20 border-2 border-amber-400 rounded-full flex items-center justify-center">
                   <Sparkles className="w-10 h-10 text-amber-300" />
                 </div>
                 <h2 className="font-cinzel text-3xl font-black text-amber-200 tracking-wide">
@@ -149,11 +145,11 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                     +{territory.coinsReward} Coins Earned
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ) : (
-              <>
+              <motion.div key={`question-${currentQuestionIndex}`} className="space-y-6" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: .16 }}>
                 {/* Question Box */}
-                <div className="bg-slate-900/80 border border-amber-700/50 rounded-xl p-5 shadow-inner">
+                <motion.div key={currentQuestion.id} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} className="battle-question bg-slate-900/80 border border-amber-700/50 rounded-xl p-5 shadow-inner">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold text-amber-400 uppercase bg-amber-950/80 px-2 py-0.5 rounded border border-amber-600/40">
                       Grammar Strike #{currentQuestionIndex + 1}
@@ -165,7 +161,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                   <h4 className="font-sans text-base font-semibold text-slate-100 leading-snug">
                     {currentQuestion.questionText}
                   </h4>
-                </div>
+                </motion.div>
 
                 {/* Multiple Choice Options */}
                 <div className="grid grid-cols-1 gap-3">
@@ -187,10 +183,11 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                       <button
                         key={idx}
                         disabled={isAnswered}
+                        aria-pressed={isSelected}
                         onClick={() => setSelectedOption(idx)}
                         className={`w-full text-left p-4 rounded-xl border-2 font-medium text-sm transition-all flex items-center justify-between ${btnStyle}`}
                       >
-                        <span>{optionText}</span>
+                        <span className="answer-letter" aria-hidden="true">{String.fromCharCode(65 + idx)}</span><span className="answer-copy">{optionText}</span>
                         {isAnswered && idx === currentQuestion.correctAnswerIndex && (
                           <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
                         )}
@@ -205,6 +202,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                 {/* Answer Feedback & Explanation */}
                 {isAnswered && (
                   <motion.div
+                    role="status"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={`p-4 rounded-xl border ${
@@ -231,8 +229,9 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                     </p>
                   </motion.div>
                 )}
-              </>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
 
           {/* Action Bar */}

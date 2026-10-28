@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { StateArtwork } from '@/components/StateArtwork';
 import { Territory } from '@/types/game';
 import { X, Swords, BookOpen, ShieldCheck, Lock, Award, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -42,17 +43,19 @@ export const TerritoryModal: React.FC<TerritoryModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div className="realm-command-scene fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div className="realm-command-scene__relief" aria-hidden="true"><StateArtwork id={territory.id} priority /></div>
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100"
+          className="game-panel territory-panel relative w-full max-w-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100"
         >
           {/* Header Banner */}
           <div className="relative p-6 bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b border-amber-600/40">
             <button
               onClick={onClose}
+              aria-label="Close territory"
               className="absolute top-4 right-4 text-amber-400/70 hover:text-amber-200 p-2 rounded-lg hover:bg-amber-950/60 transition"
             >
               <X className="w-6 h-6" />
@@ -73,8 +76,9 @@ export const TerritoryModal: React.FC<TerritoryModalProps> = ({
                   {territory.grammarCategory}
                 </span>
                 <h2 className="font-cinzel text-2xl font-black text-amber-100 tracking-wide">
-                  {territory.name} {territory.alias ? `— ${territory.alias}` : ''}
+                  {territory.name}
                 </h2>
+                {territory.alias && <p className="realm-command-scene__alias">{territory.alias}</p>}
                 <p className="text-xs text-amber-200/80 italic">
                   Topic: {territory.topic}
                 </p>
@@ -85,6 +89,7 @@ export const TerritoryModal: React.FC<TerritoryModalProps> = ({
             <div className="flex gap-2 mt-4">
               <button
                 onClick={() => setActiveTab('command')}
+                aria-pressed={activeTab === 'command'}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold font-cinzel transition-all ${
                   activeTab === 'command'
                     ? 'bg-amber-600 text-slate-950 shadow-md'
@@ -95,6 +100,7 @@ export const TerritoryModal: React.FC<TerritoryModalProps> = ({
               </button>
               <button
                 onClick={() => setActiveTab('study')}
+                aria-pressed={activeTab === 'study'}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold font-cinzel transition-all ${
                   activeTab === 'study'
                     ? 'bg-amber-600 text-slate-950 shadow-md'
@@ -108,6 +114,12 @@ export const TerritoryModal: React.FC<TerritoryModalProps> = ({
 
           {/* Body Content */}
           <div className="p-6 space-y-6 max-h-[65vh] overflow-y-auto">
+            <AnimatePresence mode="wait">
+            <motion.div key={activeTab} className={`realm-tab realm-tab--${activeTab}`}
+              initial={{ opacity: 0, clipPath: activeTab === 'study' ? 'inset(0 0 100% 0)' : 'inset(0)' }}
+              animate={{ opacity: 1, clipPath: 'inset(0)' }}
+              exit={{ opacity: 0, clipPath: activeTab === 'study' ? 'inset(0 0 100% 0)' : 'inset(0)' }}
+              transition={{ duration: activeTab === 'study' ? .32 : .16 }}>
             {activeTab === 'command' ? (
               <>
                 {/* Territory Description */}
@@ -227,6 +239,8 @@ export const TerritoryModal: React.FC<TerritoryModalProps> = ({
                 </div>
               </div>
             )}
+            </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Footer Action Bar */}

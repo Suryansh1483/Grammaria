@@ -1,0 +1,307 @@
+/* The original atlas remains intact; transparent reliefs appear only while a region is lifted. */
+.illustrated-atlas { background: #0c1b20; }
+.illustrated-atlas .atlas-toolbar { padding-block: 14px; background: #0c171b; }
+.illustrated-atlas .atlas-toolbar h2 { font: 500 26px/1.1 var(--font-display), Georgia, serif; }
+.atlas-viewport { position: relative; flex: 1; min-height: 0; overflow: hidden; isolation: isolate; touch-action: none; cursor: grab; background: #130f0a; }
+.atlas-viewport.is-dragging { cursor: grabbing; }
+.atlas-viewport:focus-visible { outline-offset: -5px; }
+.atlas-ocean { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 32%, #46625b66, transparent 64%), radial-gradient(ellipse at 15% 80%, #335d5e99, transparent 60%), linear-gradient(125deg, #142e37, #203b40 50%, #112932); }
+.atlas-ocean::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 120px #020c1466; }
+.atlas-viewport > .atlas-atmosphere { display: none; }
+.atlas-original-map { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.atlas-world { position: absolute; left: 50%; top: 50%; margin-left: -800px; margin-top: -550px; transform-origin: center; will-change: transform; }
+.atlas-currents { position: absolute; inset: 0; width: 100%; height: 100%; color: #c4c2a84d; pointer-events: none; }
+.atlas-currents path, .atlas-currents circle { fill: none; stroke: currentColor; stroke-width: 1; }
+.atlas-currents text { fill: currentColor; font: 20px var(--font-cinzel), serif; }
+.atlas-world__signature { position: absolute; right: 55px; top: 50px; font: italic 18px var(--font-display), Georgia, serif; color: #d3d9bf66; pointer-events: none; }
+.atlas-region { position: absolute; transform: translate(-50%, -50%); z-index: 3; filter: none; pointer-events: none; transition: transform 260ms var(--ease-out), filter 260ms var(--ease-out), opacity 320ms; }
+.atlas-region__hit { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: none; pointer-events: auto; }
+.atlas-region__relief img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; pointer-events: none; opacity: 0; transition: opacity 220ms var(--ease-out); }
+.atlas-region.is-hovered .atlas-region__relief img, .atlas-region:has(:focus-visible) .atlas-region__relief img, .atlas-region.is-selected .atlas-region__relief img { opacity: 1; }
+.atlas-region__label { position: absolute; transform: translate(-50%, -50%); color: #2b1b0d; text-align: center; pointer-events: none; text-shadow: 0 1px 1px #fce3ad; white-space: nowrap; transition: opacity 160ms; }
+.atlas-region__label strong { display: flex; align-items: center; justify-content: center; gap: 5px; font: 700 20px/1.15 var(--font-cinzel), Georgia, serif; }
+.atlas-region__label svg { width: 17px; height: 17px; }
+.atlas-region__label em { display: block; margin-top: 4px; font: italic 13px/1.1 Georgia, serif; }
+.atlas-region--captured .atlas-region__label { color: #173e2b; }
+.atlas-region.is-hovered .atlas-region__label, .atlas-region:has(:focus-visible) .atlas-region__label, .atlas-region.is-selected .atlas-region__label { opacity: 0; }
+.atlas-region__coast { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; opacity: 0; transition: opacity 260ms; }
+.atlas-region__coast polygon { fill: none; stroke: #ffe1a0; stroke-width: 1.5; stroke-linejoin: round; }
+.atlas-region.is-hovered, .atlas-region:has(:focus-visible) { z-index: 12; transform: translate(-50%, -50%) translateY(-8px) scale(1.055); filter: brightness(1.08) drop-shadow(0 20px 13px #0009); }
+.atlas-region.is-hovered .atlas-region__coast, .atlas-region:has(:focus-visible) .atlas-region__coast { opacity: .8; }
+.atlas-region:has(:focus-visible) .atlas-region__coast polygon { stroke-width: 3; }
+.atlas-region__hit:focus-visible { outline: none; }
+.atlas-viewport.has-selection .atlas-region:not(.is-selected) { opacity: 1; }
+.atlas-region.is-selected { z-index: 20; transform: translate(-50%, -50%) translateY(-14px) scale(1.1); filter: brightness(1.12) drop-shadow(0 25px 17px #000b); }
+.atlas-region.is-selected .atlas-region__coast { opacity: 1; }
+.atlas-viewport.is-dragging .atlas-region { transition: opacity 160ms; }
+.game-shell .atlas-region button:not(:disabled):active { translate: none; }
+.atlas-map-caption { position: absolute; top: 22px; left: 30px; z-index: 2; color: #e6ddbd; pointer-events: none; }
+.atlas-map-caption > span { font: 500 32px/1 var(--font-display), Georgia, serif; }
+.atlas-map-caption p { margin-top: 6px; color: #bbc9bc; font-size: 10px; letter-spacing: .04em; }
+.atlas-viewport[data-zoomed="true"] .atlas-map-caption { visibility: hidden; }
+.atlas-help { position: absolute; bottom: 20px; left: 24px; color: #d5ddcd; font-size: 10px; padding: 5px 8px; background: #10272ddd; border-radius: 2px; pointer-events: none; }
+.atlas-zoom { position: absolute; right: 24px; bottom: 20px; display: flex; align-items: center; gap: 1px; padding: 4px; background: #0a1b20f2; border: 1px solid #83907788; border-radius: 3px; box-shadow: 0 8px 25px #0005; z-index: 22; cursor: default; }
+.atlas-zoom button { display: grid; place-items: center; width: 40px; height: 40px; border: 0; background: transparent; color: #e6d4a9; border-radius: 2px; }
+.atlas-zoom button svg { width: 17px; height: 17px; stroke-width: 1.5; }
+.atlas-zoom button:hover:not(:disabled) { background: #d2b47722; }
+.atlas-zoom button:disabled { opacity: .3; }
+.atlas-zoom output { min-width: 52px; padding-inline: 5px; text-align: center; font-size: 11px; font-variant-numeric: tabular-nums; color: #d3d9c7; }
+.atlas-zoom button:last-child { border-left: 1px solid #84907855; margin-left: 4px; }
+.frontier-brief strong { font: 500 26px/1 var(--font-display), Georgia, serif; animation: atlas-name-reveal 180ms var(--ease-out); }
+.realm-index__entry strong { font: 600 23px/1.15 var(--font-display), Georgia, serif; }
+.realm-index__entry small { font-size: 12px; }
+.realm-index__entry > span:nth-last-child(2) { font-size: 11px; }
+
+.atlas-crossing { position: fixed; inset: 0; z-index: 200; overflow: hidden; touch-action: none; cursor: progress; }
+.atlas-crossing__shade { position: absolute; inset: 0; background: #111e20; }
+.atlas-crossing--capital .atlas-crossing__shade { background: #091c11; }
+.atlas-crossing--time .atlas-crossing__shade { background: #102d38; }
+.atlas-crossing__cloud { position: absolute; inset: -25vh -25vw; width: 150vw; height: 150vh; background: url('/effects/cloud-veil.png') center / cover no-repeat; will-change: transform, opacity; }
+.atlas-crossing__cloud--near { animation: cloud-cross-near 1250ms cubic-bezier(.45, 0, .2, 1) both; }
+.atlas-crossing__cloud--far { animation: cloud-cross-far 1200ms cubic-bezier(.45, 0, .2, 1) 30ms both; opacity: .7; }
+.atlas-crossing__cloud--low { top: 5vh; height: 130vh; animation: cloud-cross-near 1100ms cubic-bezier(.45, 0, .2, 1) 100ms both; }
+.game-overlay__content { width: 100%; height: 100%; }
+.game-overlay--panel .game-overlay__content > .fixed { background: transparent; backdrop-filter: none; }
+.activity-intro { position: absolute; inset: 0; z-index: 95; display: grid; place-items: center; overflow: hidden; color: #f4e5c1; background: #09171bf5; animation: activity-curtain 850ms var(--ease-out) both; }
+.activity-intro__copy { position: relative; text-align: center; padding: 32px; animation: activity-title 850ms var(--ease-out) both; }
+.activity-intro__copy > svg { width: 40px; height: 40px; margin: 0 auto 20px; color: #d5b276; stroke-width: 1.1; }
+.activity-intro__copy h2 { max-width: 800px; font: 500 clamp(36px, 5vw, 70px)/1.05 var(--font-display), Georgia, serif; }
+.activity-intro__copy p { margin-top: 16px; font-size: 13px; color: #c2c8b8; }
+.activity-intro__relief { position: absolute; inset: 8%; background: center / contain no-repeat; opacity: .25; transform: scale(1.25); filter: saturate(.65); }
+.activity-intro--quest { color: #372a17; background: #e6d5ad; transform-origin: top; animation: quest-unfold 850ms var(--ease-out) both; }
+.activity-intro--quest .activity-intro__copy > svg { color: #7c6035; }
+.activity-intro--quest .activity-intro__copy p { color: #665338; }
+
+/* Display lettering belongs to titles; small controls stay in the readable interface face. */
+.game-shell h2, .game-shell h3, .game-shell .font-cinzel { font-family: var(--font-display), Georgia, serif; }
+.game-shell h2 { font-weight: 500; letter-spacing: -.02em; text-transform: none; text-wrap: balance; }
+.game-shell h3 { font-weight: 600; letter-spacing: normal; text-transform: none; text-wrap: balance; }
+.game-shell button.font-cinzel, .game-shell button .font-cinzel { font-family: var(--font-inter), sans-serif; font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+.game-panel h2 { font-size: 40px; }
+.game-panel h3 { font-size: 26px; line-height: 1.15; }
+.game-panel .text-xs { font-size: 13px; }
+.game-panel .text-\[10px\] { font-size: 11px; }
+.game-panel p { color: #d0d6c7; }
+.game-panel h4 { font-size: 20px; font-weight: 500; }
+.game-panel button { min-height: 42px; }
+.game-panel button.font-cinzel { font-family: var(--font-inter), sans-serif; font-size: 12px; }
+.territory-screen__content h2, .centralia__content h2 { font: 500 clamp(48px, 5.5vw, 84px)/.95 var(--font-display), Georgia, serif; letter-spacing: -.025em; text-transform: none; }
+.territory-alias { font: italic 20px/1.25 var(--font-display), Georgia, serif; }
+.territory-command nav button, .territory-cta, .territory-back, .centralia__back, .commander-hall__close { font-family: var(--font-inter), sans-serif; font-weight: 500; text-transform: none; letter-spacing: .02em; }
+.territory-command nav button { font-size: 12px; }
+.territory-intro { font-size: 15px; }
+.territory-objective strong { font: 600 23px/1.15 var(--font-display), Georgia, serif; }
+.territory-status { font-size: 10px; font-weight: 500; }
+.territory-example { font-family: var(--font-inter), sans-serif; font-size: 13px; }
+.guide-dialogue__speaker span { font: 600 23px/1.1 var(--font-display), Georgia, serif; text-transform: none; }
+.guide-dialogue__speaker small { font-family: var(--font-inter), sans-serif; font-size: 10px; text-transform: none; letter-spacing: .03em; }
+.guide-dialogue p { font: 400 23px/1.5 var(--font-display), Georgia, serif; }
+.guide-dialogue__actions button { font-family: var(--font-inter), sans-serif; font-size: 12px; text-transform: none; letter-spacing: 0; }
+.commander-dossier h2 { font: 500 clamp(42px, 4.5vw, 72px)/1 var(--font-display), Georgia, serif; text-transform: none; }
+.commander-dossier > header > div > small { display: none; }
+.commander-tabs button { font-family: var(--font-inter), sans-serif; text-transform: none; font-size: 12px; letter-spacing: 0; }
+.commander-stats strong { font-family: var(--font-display), Georgia, serif; font-size: 34px; }
+.commander-stats small, .commander-progress__top, .commander-progress__next, .commander-honors small { color: #c3c7b6; font-family: var(--font-inter), sans-serif; text-transform: none; letter-spacing: .02em; }
+.realm-conquest h3 { font-size: 25px; line-height: 1.1; }
+.realm-conquest small, .realm-conquest button { font-family: var(--font-inter), sans-serif; text-transform: none; font-size: 11px; }
+.realm-conquest__ring small { font-size: 9px; }
+.mastery-columns h3 { font-size: 24px; }
+.mastery-columns { grid-template-columns: 1.15fr 1fr; gap: 24px; }
+.mastery-columns > div { min-width: 0; }
+.mastery-row { grid-template-columns: minmax(0, 1.4fr) minmax(32px, .8fr) 32px; gap: 8px; margin-top: 12px; color: #d1d8c8; font: 400 12px/1.5 var(--font-inter), sans-serif; }
+.mastery-row > strong { font-size: 11px; }
+.mastery-target > span { width: 24px; height: 24px; flex-shrink: 0; font: 500 11px/1 var(--font-inter), sans-serif; }
+.mastery-target div { min-width: 0; }
+.mastery-target strong { font: 500 12px/1.5 var(--font-inter), sans-serif; }
+.mastery-target small { display: block; margin-top: 4px; color: #b9c4af; font: 400 11px/1.5 var(--font-inter), sans-serif; }
+.academy-insight { border-left-width: 1px; }
+.academy-insight small { color: #d4c095; font: 500 11px/1.5 var(--font-inter), sans-serif; letter-spacing: 0; text-transform: none; }
+.quest-board__header h2 { font: 500 44px/1 var(--font-display), Georgia, serif; }
+.quest-card__copy h3 { font: 600 23px/1.1 var(--font-display), Georgia, serif; text-transform: none; }
+.quest-card__copy > small { display: block; margin-top: 5px; font-size: 11px; }
+.quest-card__copy small, .quest-summary small, .quest-summary strong, .quest-summary__progress > div:first-child, .quest-card__reward button, .quest-card__progress strong, .quest-board__timer small, .quest-board__timer strong { font-family: var(--font-inter), sans-serif; text-transform: none; letter-spacing: 0; }
+.quest-card__number { display: none; }
+.quest-card { grid-template-columns: 42px 1fr 130px; }
+.quest-card__copy > p { font-size: 12px; }
+.quest-card__reward > span { font-size: 11px; }
+.quest-card__stamp { font-family: var(--font-inter), sans-serif; }
+.quest-bonus strong { font-family: var(--font-display), Georgia, serif; font-size: 24px; }
+.quest-bonus p { font-size: 12px; }
+.centralia__lock strong, .capital-trial__heading, .capital-trial__answers button > span, .grammarch-dialogue button, .centralia__requirement { font-family: var(--font-inter), sans-serif; text-transform: none; letter-spacing: 0; }
+.grammarch-dialogue__name strong { font: 600 23px/1 var(--font-display), Georgia, serif; text-transform: none; }
+.grammarch-dialogue__name span { font-family: var(--font-inter), sans-serif; letter-spacing: .02em; text-transform: none; }
+.capital-trial h3 { font-family: var(--font-inter), sans-serif; font-size: 17px; line-height: 1.5; font-weight: 500; }
+.capital-trial__answers button p { font-size: 13px; }
+.centralia__voice { width: 44px; height: 44px; }
+.rankings-panel > div:first-child h3, .events-panel h3 { font-size: 32px; }
+.ranking-row h4 { font-family: var(--font-inter), sans-serif; font-size: 13px; }
+.ranking-row > div:first-child > div:first-child { font-family: var(--font-display), Georgia, serif; font-size: 26px; }
+.treasure-panel h3 { font-size: 34px; }
+.treasure-panel > div:first-child > span { font-family: var(--font-inter), sans-serif; font-size: 13px; font-weight: 500; }
+
+.realm-command-scene { justify-content: flex-start; padding: 40px clamp(24px, 5vw, 90px); background: radial-gradient(ellipse at 80% 40%, #3b524244, transparent 60%), #0a191fe8; backdrop-filter: none; isolation: isolate; }
+.realm-command-scene__relief { position: absolute; right: 2%; top: 50%; width: 42%; transform: translateY(-50%) rotate(-5deg); z-index: -1; filter: drop-shadow(0 35px 35px #0009); pointer-events: none; animation: realm-relief-reveal 650ms var(--ease-out) both; }
+.realm-command-scene__relief img { width: 100%; height: auto; }
+.realm-command-scene .territory-panel { width: min(56%, 780px); max-width: none; border: 0 !important; box-shadow: none !important; background: #10252bf2 !important; }
+.realm-command-scene .territory-panel > div:first-child { background: transparent !important; border-bottom: 1px solid #6c7359; padding: 28px 24px 24px; }
+.realm-command-scene .territory-panel > div:first-child h2 { font-size: clamp(30px, 3vw, 48px); padding-right: 20px; line-height: .98; }
+.realm-command-scene .territory-panel > div:first-child > div:first-of-type > div:first-child { display: none; }
+.realm-command-scene .territory-panel > div:first-child > div:first-of-type { display: block; }
+.realm-command-scene .territory-panel > div:first-child > div:first-of-type p { margin-top: 12px; font: 13px var(--font-inter), sans-serif; }
+.realm-command-scene .territory-panel > div:first-child > div:first-of-type .realm-command-scene__alias { margin-top: 8px; font: italic 24px/1.2 var(--font-display), Georgia, serif; color: #d9cba7; }
+.realm-command-scene .territory-panel > div:first-child > div:last-child button { font-family: var(--font-inter), sans-serif; font-size: 12px; text-transform: none; }
+.realm-command-scene .territory-panel > div:nth-child(2) > div { background: transparent; border: 0; padding-inline: 0; }
+.realm-command-scene .territory-panel > div:nth-child(2) > div h3 { font-size: 23px; }
+.battle-panel { border-color: #8d7853 !important; }
+.battle-panel > div:first-child h3 { font: 500 28px/1.2 var(--font-display), Georgia, serif; }
+.battle-context { display: block; margin-top: 7px; font: 400 12px/1.4 var(--font-inter), sans-serif; }
+.battle-panel .battle-question h4 { font-family: var(--font-inter), sans-serif; font-size: 21px; line-height: 1.5; }
+.battle-panel .battle-question { padding-top: 0; background: transparent; }
+.battle-panel .battle-question > div { margin-bottom: 16px; }
+.battle-panel [class*="bg-gradient-to-r"][class*="from-rose-"] { background: #bd816c; box-shadow: none; }
+
+@keyframes cloud-cross-near { 0% { transform: translate(-95%, 12%) scale(1.1); opacity: 0; } 25% { opacity: 1; } 48% { transform: translate(-5%, 0) scale(1.15); opacity: 1; } 65% { opacity: 1; } 100% { transform: translate(100%, -10%) scale(1.2); opacity: 0; } }
+@keyframes cloud-cross-far { 0% { transform: translate(95%, -20%) scale(1.3) scaleX(-1); opacity: 0; } 30% { opacity: .85; } 52% { transform: translate(0, 0) scale(1.2) scaleX(-1); opacity: 1; } 100% { transform: translate(-100%, 20%) scale(1.3) scaleX(-1); opacity: 0; } }
+@keyframes atlas-cloud-drift { from { transform: translate(-12%, -5%); } to { transform: translate(12%, 5%); } }
+@keyframes atlas-name-reveal { from { opacity: .6; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@keyframes activity-curtain { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes activity-title { from { opacity: 0; transform: translateY(15px); filter: blur(4px); } 35%, 70% { opacity: 1; transform: none; filter: blur(0); } to { opacity: 0; transform: translateY(-8px); } }
+@keyframes quest-unfold { from { clip-path: inset(0 0 100% 0); } 35%, 65% { clip-path: inset(0); opacity: 1; } to { clip-path: inset(0); opacity: 0; } }
+@keyframes realm-relief-reveal { from { opacity: 0; transform: translate(8%, -48%) rotate(-2deg) scale(.95); } to { opacity: 1; transform: translateY(-50%) rotate(-5deg); } }
+
+@media (max-width: 900px) {
+  .mastery-columns { grid-template-columns: 1fr; }
+  .illustrated-atlas .atlas-toolbar h2 { font-size: 24px; }
+  .atlas-map-caption { top: 18px; left: 18px; }
+  .atlas-map-caption > span { font-size: 28px; }
+  .atlas-zoom { right: 16px; bottom: 16px; }
+  .realm-command-scene { padding: 70px 24px 24px; }
+  .realm-command-scene .territory-panel { width: min(78%, 680px); }
+  .realm-command-scene__relief { right: -25%; width: 90%; opacity: .45; }
+}
+@media (max-width: 650px) {
+  .illustrated-atlas .atlas-toolbar { padding: 12px 16px; }
+  .illustrated-atlas .atlas-toolbar h2 { font-size: 22px; max-width: 150px; }
+  .illustrated-atlas .atlas-toolbar > div:first-child > svg { display: none; }
+  .atlas-map-caption { top: 16px; }
+  .atlas-map-caption > span { font-size: 26px; }
+  .atlas-map-caption p { font-size: 9px; }
+  .atlas-zoom { bottom: 14px; right: 12px; padding: 2px; }
+  .atlas-zoom button { width: 36px; height: 40px; }
+  .atlas-zoom output { min-width: 44px; }
+  .atlas-help { bottom: 66px; left: 16px; font-size: 10px; }
+  .frontier-brief strong { font-size: 24px; }
+  .frontier-brief div > span { font-size: 10px; }
+  .realm-index__entry { min-height: 84px; }
+  .realm-index__entry strong { font-size: 24px; }
+  .realm-index__entry small { font-size: 12px; line-height: 1.5; }
+  .game-panel h3 { font-size: 26px; }
+  .game-panel > div:first-child { padding: 22px 16px; }
+  .realm-command-scene { padding: 28px 12px; }
+  .realm-command-scene .territory-panel { width: 100%; max-height: calc(100svh - 56px); }
+  .realm-command-scene .territory-panel > div:first-child { padding: 24px 18px 18px; }
+  .realm-command-scene .territory-panel > div:first-child h2 { font-size: 36px; }
+  .realm-command-scene__relief { width: 140%; right: -40%; opacity: .3; }
+  .battle-panel > div:first-child h3 { font-size: 23px; }
+  .battle-panel .battle-question h4 { font-size: 18px; }
+  .rankings-panel > div:first-child h3, .events-panel h3 { font-size: 28px; }
+  .treasure-panel h3 { font-size: 30px; }
+  .territory-screen__content h2, .centralia__content h2 { font-size: 50px; }
+  .territory-screen__content header { padding-left: 0; }
+  .territory-crest { display: none; }
+  .territory-alias { font-size: 22px; }
+  .territory-pane { padding: 20px; }
+  .territory-intro { font-size: 14px; }
+  .territory-objective strong { font-size: 22px; }
+  .guide-dialogue p { font-size: 23px; }
+  .commander-dossier h2 { font-size: 46px; }
+  .commander-dossier > header { grid-template-columns: 1fr; }
+  .commander-rank { display: none; }
+  .quest-board__header h2 { font-size: 36px; }
+  .quest-card { grid-template-columns: 28px 1fr; }
+  .quest-card__copy h3 { font-size: 22px; }
+  .quest-card__copy > p { font-size: 12px; }
+  .quest-board__header p { font-size: 13px; }
+  .capital-trial__answers button p { font-size: 13px; }
+  .capital-trial h3 { font-size: 16px; }
+  .activity-intro__copy h2 { font-size: 44px; }
+  .activity-intro__copy p { font-size: 12px; }
+  .atlas-crossing__cloud { background-size: auto 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-region.is-hovered, .atlas-region:has(:focus-visible), .atlas-region.is-selected { transform: translate(-50%, -50%); }
+  .atlas-crossing__cloud, .activity-intro { display: none; }
+}
+.state-artwork { position: relative; display: block; width: 100%; overflow: hidden; pointer-events: none; }
+.state-artwork img { position: absolute; max-width: none; object-fit: fill; }
+.atlas-region__relief .state-artwork { height: 100%; }
+.atlas-region__relief .state-artwork img { object-fit: fill; }
+.activity-intro__relief { display: flex; align-items: center; justify-content: center; }
+.activity-intro__relief .state-artwork { width: min(75%, 900px); }
+/* Keep the land under the cursor stable while the illustrated relief rises. */
+.atlas-region { transition: transform 320ms cubic-bezier(.16,1,.3,1), filter 320ms cubic-bezier(.16,1,.3,1); }
+.atlas-region__relief img { transition: opacity 300ms cubic-bezier(.16,1,.3,1); }
+.atlas-region.is-hovered, .atlas-region:has(:focus-visible) { transform: translate(-50%,-50%) translateY(-6px) scale(1.035); filter: brightness(1.045) drop-shadow(0 14px 9px #1b100c99); }
+.atlas-region.is-selected { transform: translate(-50%,-50%) translateY(-10px) scale(1.065); }
+.atlas-region__coast polygon { stroke-width: .75; stroke: #fff0ca; }
+.atlas-region__label { transition: opacity 220ms, translate 280ms; }
+.atlas-region.is-hovered .atlas-region__label { translate: 0 -3px; }
+.realm-return-clouds { position: absolute; inset: -20%; z-index: 110; pointer-events: none; background: url('/effects/cloud-veil.png') center / cover; opacity: 0; }
+.game-overlay[data-phase="exit"] .realm-return-clouds { animation: realm-cloud-return 650ms ease-in-out both; }
+@keyframes realm-cloud-return { from { opacity: 0; transform: translateX(-35%); } 60% { opacity: .85; } to { opacity: 0; transform: translateX(40%); } }
+/* The parchment opens between its rollers; the ink never stretches with the paper. */
+.quest-scroll { background: transparent; border: 0; box-shadow: none; isolation: isolate; margin-block: 18px; }
+.quest-scroll::before { display: none; }
+.quest-scroll__paper { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg,#c7b28b,#eee2c4 5%,#e8dabb 50%,#eee2c4 95%,#c7b28b); box-shadow: inset 0 0 35px #775a2422; }
+.quest-scroll__paper::after { content: ""; position: absolute; inset: 12px; border: 1px solid #8b724b55; pointer-events: none; }
+.quest-scroll__rod { display: block; z-index: 3; height: 15px; left: -1%; width: 102%; border: 1px solid #5e492b; background: linear-gradient(#8c744c,#dfcaa1 38%,#b59a69 58%,#6c5430); box-shadow: 0 6px 14px #0005; }
+.quest-scroll__rod::before, .quest-scroll__rod::after { width: 17px; height: 23px; top: -5px; border: 1px solid #6b512f; background: linear-gradient(90deg,#735631,#cfb584,#84653b); border-radius: 4px; }
+.quest-scroll__rod--top { top: -6px; animation: scroll-top-open 600ms cubic-bezier(.65,0,.25,1) both; }
+.quest-scroll__rod--bottom { bottom: -6px; animation: scroll-bottom-open 600ms cubic-bezier(.65,0,.25,1) both; }
+.quest-scroll[data-phase="exit"] .quest-scroll__rod--top { animation: scroll-top-close 600ms cubic-bezier(.65,0,.25,1) both; }
+.quest-scroll[data-phase="exit"] .quest-scroll__rod--bottom { animation: scroll-bottom-close 600ms cubic-bezier(.65,0,.25,1) both; }
+@keyframes scroll-top-open { from { top: calc(50% - 7px); } to { top: -6px; } }
+@keyframes scroll-bottom-open { from { bottom: calc(50% - 7px); } to { bottom: -6px; } }
+@keyframes scroll-top-close { from { top: -6px; } to { top: calc(50% - 7px); } }
+@keyframes scroll-bottom-close { from { bottom: -6px; } to { bottom: calc(50% - 7px); } }
+.quest-card { border-left-width: 1px; background: #f9f0dc33; box-shadow: none; }
+.quest-board__header p { color: #665136; font-style: normal; font-family: var(--font-inter),sans-serif; }
+.quest-summary small, .quest-card__copy p { color: #655136; }
+.quest-summary { background: transparent; box-shadow: none; padding-block: 18px; border-inline: 0; }
+.quest-board__close { border-radius: 3px; background: #e5d3af; }
+.quest-board__seal { border-radius: 4px; background: transparent; color: #59492f; border: 0; }
+.quest-board__seal span { display: none; }
+.game-overlay--reward::before { background: radial-gradient(ellipse at 50% 45%,#62482b66,transparent 60%),#08171c; }
+.game-overlay--events::before { background: linear-gradient(115deg,#301d17dd,#0a191fee),url('/map-bg-ornate.jpg') center / cover; }
+.game-panel button:focus-visible, .quest-scroll button:focus-visible { outline: 2px solid #c3a574; outline-offset: 4px; }
+.game-panel .animate-pulse { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .realm-return-clouds { display: none; }
+  .atlas-region.is-hovered, .atlas-region.is-selected, .atlas-region:has(:focus-visible) { transform: translate(-50%,-50%); }
+}
+.realm-tab { display: grid; gap: 24px; }
+.realm-tab--study { padding: 22px; color: #42351f; background: linear-gradient(95deg,#d6c39d,#eee2c6 12%,#e7d9b9 90%,#cdb58b); border-radius: 2px; }
+.realm-tab--study > div > div { background: transparent; border: 0; padding: 0; }
+.realm-tab--study h3 { color: #5b4525; }
+.realm-tab--study p, .realm-tab--study li { color: #4c402a; font-style: normal; }
+.realm-tab--study [class*="bg-slate-950"] { background: #bba37522; border-color: #9c845d66; margin-top: 12px; }
+.realm-tab--study .text-emerald-300 { color: #355338; }
+.realm-tab--study .text-rose-400\/80 { color: #82493c; }
+.territory-panel [class*="from-rose-600"], .battle-panel [class*="from-rose-600"] { background: #b87361; }
+.game-overlay .game-panel button { border-radius: 3px; }
+.atlas-lift-beds { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.atlas-lift-beds > polygon { opacity: 0; transition: opacity 300ms var(--ease-out); }
+.atlas-lift-beds > polygon.is-visible { opacity: 1; }
+
+.realm-command-scene .territory-panel > div:nth-child(2) > .realm-tab--study { padding: 22px; background: linear-gradient(95deg,#d6c39d,#eee2c6 12%,#e7d9b9 90%,#cdb58b); }
+
+.atlas-region__hit { position: absolute; inset: 0; z-index: 2; }
+.atlas-region__relief { position: absolute; inset: 0; pointer-events: none; }
+.atlas-region__relief, .atlas-region__coast { transition: transform 320ms cubic-bezier(.16,1,.3,1), opacity 260ms; }
+.atlas-region.is-hovered, .atlas-region:has(:focus-visible), .atlas-region.is-selected { transform: translate(-50%,-50%); }
+.atlas-region.is-hovered .atlas-region__relief, .atlas-region.is-hovered .atlas-region__coast,
+.atlas-region:has(:focus-visible) .atlas-region__relief, .atlas-region:has(:focus-visible) .atlas-region__coast { transform: translateY(-6px) scale(1.035); }
+.atlas-region.is-selected .atlas-region__relief, .atlas-region.is-selected .atlas-region__coast { transform: translateY(-10px) scale(1.065); }
+@media (prefers-reduced-motion: reduce) {
+  .atlas-region .atlas-region__relief, .atlas-region .atlas-region__coast { transform: none !important; }
+}

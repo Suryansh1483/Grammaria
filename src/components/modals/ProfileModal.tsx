@@ -38,8 +38,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ player, onClose }) =
         </motion.section>
 
         <motion.div className="commander-tabs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .2 }}>
-          <button type="button" onClick={() => setView("record")} className={view === "record" ? "is-active" : ""}><Swords /> Campaign Record</button>
-          <button type="button" onClick={() => setView("mastery")} className={view === "mastery" ? "is-active" : ""}><BookOpen /> Grammar Mastery</button>
+          <button type="button" onClick={() => setView("record")} aria-pressed={view === "record"} className={view === "record" ? "is-active" : ""}><Swords /> Campaign Record</button>
+          <button type="button" onClick={() => setView("mastery")} aria-pressed={view === "mastery"} className={view === "mastery" ? "is-active" : ""}><BookOpen /> Grammar Mastery</button>
         </motion.div>
 
         <AnimatePresence mode="wait">
@@ -50,7 +50,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ player, onClose }) =
                 <article><span><Flame /></span><div><small>Learning streak</small><strong>{player.streak}<em> days</em></strong></div></article>
                 <article><span><Award /></span><div><small>Battle accuracy</small><strong>88.4<em>%</em></strong></div></article>
               </div>
-              <div className="realm-conquest"><div className="realm-conquest__ring" style={{ "--realm-progress": `${realmPercent * 3.6}deg` } as React.CSSProperties}><strong>{realmPercent}%</strong><small>conquered</small></div><div><small>Grammaria campaign</small><h3>The road to Centralia</h3><p>{player.totalTerritories - player.capturedTerritoriesCount} territories remain before the capital gates can be challenged.</p><button type="button" onClick={onClose}>Continue campaign <ChevronRight /></button></div></div>
+              <div className="realm-conquest"><div className="realm-conquest__ring" style={{ "--realm-progress": `${realmPercent * 3.6}deg` } as React.CSSProperties}><strong>{realmPercent}%</strong><small>conquered</small></div><div><h3>The road to Centralia</h3><p>{player.totalTerritories - player.capturedTerritoriesCount} territories remain before the capital gates can be challenged.</p><button type="button" onClick={onClose}>Continue campaign <ChevronRight /></button></div></div>
               <div className="commander-honors"><small>Recent honors</small><div><span><Map /> Cartographer</span><span><Flame /> Five-day flame</span><span><Gem /> Article master</span></div></div>
             </motion.section>
           ) : (

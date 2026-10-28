@@ -7,6 +7,8 @@ An illustrated fantasy strategy game for learning English grammar. Players explo
 ## Highlights
 
 - Interactive fantasy map with 18 grammar territories
+- Individual transparent territory illustrations with coastline-aware hover and selection
+- Pointer-anchored zoom, drag and touch panning, pinch zoom, and keyboard map controls
 - Dedicated illustrated realm experiences for Artikel and Temporalia
 - Animated guide characters and dialogue-driven introductions
 - Grammar study guides, examples, rewards, and battle questions
@@ -40,7 +42,29 @@ npx tsc --noEmit
 npm run build
 ```
 
-The production build downloads Google Fonts through `next/font`, so network access is required during the build.
+Cinzel, Cormorant Garamond and Inter are bundled locally with their SIL Open Font licenses. Builds do not require Google Fonts access.
+
+With the development server running, check the main game flows in a browser:
+
+```bash
+npx --package @playwright/cli playwright-cli open http://127.0.0.1:3000
+npx --package @playwright/cli playwright-cli run-code --filename=tests/ui-smoke.pw
+npx --package @playwright/cli playwright-cli run-code --filename=tests/atlas-interactions.pw
+```
+
+Camera geometry tests use Node.js 24's TypeScript support:
+
+```bash
+npm test
+```
+
+## Atlas controls
+
+Use + and − to zoom between 100% and 400%, or scroll over the map to zoom toward the pointer. Drag to pan. On touchscreens, drag with one finger or pinch with two. Reset restores the complete atlas. With the map focused, use +, −, arrow keys and R. The realm index provides a list alternative at every screen size.
+
+Selecting a region lifts its complete illustration, then carries the player through a short cloud transition. Escape cancels travel or closes the current scene. Reduced-motion preferences skip cinematic movement. The map keeps its camera when returning from a realm.
+
+The original region sheet and cloud asset provenance are documented in [artwork/README.md](artwork/README.md).
 
 ## Project structure
 

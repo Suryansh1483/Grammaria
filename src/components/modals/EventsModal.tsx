@@ -15,23 +15,24 @@ export const EventsModal: React.FC<EventsModalProps> = ({ onClose }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="relative w-full max-w-xl bg-slate-900 border-2 border-purple-600/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100"
+        className="game-panel events-panel relative w-full max-w-xl bg-slate-900 border-2 border-amber-600/70 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden text-slate-100"
       >
-        <div className="p-5 bg-gradient-to-r from-purple-950 via-slate-900 to-purple-950 border-b border-purple-600/40 flex justify-between items-center">
+        <div className="p-5 bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b border-amber-600/40 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <Star className="w-7 h-7 text-purple-400 animate-pulse" />
+            <Star className="w-7 h-7 text-amber-400 animate-pulse" />
             <div>
-              <h3 className="font-cinzel text-xl font-bold text-purple-100">
+              <h3 className="font-cinzel text-xl font-bold text-amber-100">
                 Teacher-Run Classroom Assaults
               </h3>
-              <p className="text-xs text-purple-200/70">
-                Timed Multiplayer Class Conquest Events
+              <p className="text-xs text-amber-200/70">
+                Classroom conquests · Event preview
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-purple-400/60 hover:text-purple-200 p-1.5 rounded-lg hover:bg-slate-800"
+            aria-label="Close classroom assaults"
+            className="text-amber-400/60 hover:text-amber-200 p-1.5 rounded-lg hover:bg-slate-800"
           >
             <X className="w-5 h-5" />
           </button>
@@ -39,11 +40,11 @@ export const EventsModal: React.FC<EventsModalProps> = ({ onClose }) => {
 
         <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
           {/* Active Event 1 */}
-          <div className="bg-slate-950/80 border-2 border-purple-500/60 rounded-xl p-4 space-y-3 relative overflow-hidden shadow-lg">
-            <div className="absolute top-0 right-0 bg-purple-600 text-slate-950 text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider">
-              LIVE ASSAULT
+          <div className="bg-slate-950/80 border-2 border-amber-500/60 rounded-xl p-4 space-y-3 relative overflow-hidden shadow-lg">
+            <div className="absolute top-0 right-0 bg-amber-600 text-slate-950 text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+              ASSAULT PREVIEW
             </div>
-            <div className="flex items-center gap-2 text-purple-300">
+            <div className="flex items-center gap-2 text-amber-300">
               <Flame className="w-5 h-5 text-amber-400" />
               <h4 className="font-cinzel font-bold text-base text-slate-100">
                 Assault #4: The Siege of Concordia & Voicelands
@@ -53,7 +54,7 @@ export const EventsModal: React.FC<EventsModalProps> = ({ onClose }) => {
               Commander Mr. Sharma has launched a 45-minute timed battle targeting Subject-Verb Agreement & Active/Passive Voice.
             </p>
 
-            <div className="flex items-center gap-4 text-xs font-mono text-purple-300/80 pt-1">
+            <div className="flex items-center gap-4 text-xs font-mono text-amber-300/80 pt-1">
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-amber-400" /> Time Remaining: 24m 10s
               </span>
@@ -65,9 +66,9 @@ export const EventsModal: React.FC<EventsModalProps> = ({ onClose }) => {
             <div className="pt-2 flex justify-end">
               <button
                 onClick={onClose}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-slate-100 font-cinzel font-bold text-xs shadow-md hover:scale-105 transition"
+                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-slate-100 font-cinzel font-bold text-xs shadow-md hover:scale-105 transition"
               >
-                JOIN ASSAULT BATTLE <ArrowRight className="w-4 h-4" />
+                RETURN TO CAMPAIGN <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -86,7 +87,7 @@ export const EventsModal: React.FC<EventsModalProps> = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="p-4 bg-slate-950 border-t border-purple-600/40 text-center">
+        <div className="p-4 bg-slate-950 border-t border-amber-600/40 text-center">
           <button
             onClick={onClose}
             className="px-6 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300"

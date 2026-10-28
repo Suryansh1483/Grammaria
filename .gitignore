@@ -42,3 +42,16 @@ next-env.d.ts
 
 # local source artwork retained outside the shipped app
 /Ornate Multicolored Fantasy World Map.png
+
+# local tooling and browser captures
+AGENTS.md
+CLAUDE.md
+/.impeccable/
+/.playwright-cli/
+/output/
+__pycache__/
+*.py[cod]
+
+# superseded local atlas exports
+/public/regions/*.webp
+/public/regions/*.webp.json
