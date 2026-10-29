@@ -8,6 +8,8 @@ async (page) => {
   const openRealm = async (name) => {
     await page.getByRole('button', { name: new RegExp(`^${name},`) }).click();
     await page.locator('.game-overlay').waitFor();
+    const skip = page.getByRole('button', { name: 'Skip', exact: true });
+    if (await skip.isVisible()) await skip.click();
   };
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -58,6 +60,14 @@ async (page) => {
   await page.getByRole('button', { name: 'Daily Quest', exact: true }).click();
   await page.getByRole('button', { name: 'Claim', exact: true }).first().click();
   check(await page.getByRole('button', { name: 'Claimed', exact: true }).isDisabled(), 'Quest allowed a duplicate claim');
+  await close();
+  check(await page.locator('.commander-resources').innerText().then(text => text.includes('9,250')), 'Quest gold was displayed but not awarded');
+  await page.getByRole('button', { name: 'Daily Quest', exact: true }).click();
+  check(await page.getByRole('button', { name: 'Claimed', exact: true }).isDisabled(), 'Reopening quests reset a claimed reward');
+  await close();
+  await page.getByRole('button', { name: 'Reward', exact: true }).click();
+  check(await page.getByText('TREASURE CLAIMED!', { exact: true }).isVisible(), 'Reopening treasure reset its claim');
+  check(await page.getByRole('button', { name: 'OPEN CHEST', exact: true }).count() === 0, 'Treasure could be claimed twice');
   await close();
 
   for (const name of ['Artikel', 'Temporalia', 'Centralia']) { await openRealm(name); await close(); }

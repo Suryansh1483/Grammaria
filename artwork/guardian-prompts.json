@@ -1,0 +1,110 @@
+{
+  "tool": "Built-in ImageGen",
+  "characters": [
+    {
+      "id": "concordia",
+      "name": "Sir Valen",
+      "title": "Accord Marshal",
+      "path": "public/characters/concordia.png",
+      "prompt": "Use case: stylized-concept. Asset type: full-body fantasy RPG realm guardian portrait for Grammaria. Create ONE new distinct character: Sir Valen, the Accord Marshal of Concordia, a dignified middle-aged South Asian knight-scholar with short silver-streaked hair, weathered face, engraved dark steel armor, aubergine-purple cloak and muted brass details, holding a balanced ceremonial polearm and a closed grammar codex. Theme: subject-verb agreement, disciplined harmony, mountain realm. Style: exceptionally detailed painterly realistic premium fantasy character key art, believable proportions and materials, like an established classic high-fantasy RPG. Full figure head to boots, standing three-quarter facing slightly left toward UI text, central portrait composition 2:3, entire silhouette inside frame with breathing room. Soft warm key light and cool rim light. Genuine transparent background, no environment, no fog, no clouds, no pedestal, no text, no lettering, no watermark, no UI, no collage. Match polished realism of existing regal archivist and armored capital guardian without copying their identity."
+    },
+    {
+      "id": "tagtown",
+      "name": "Captain Rhea",
+      "title": "Border Sentinel",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Captain Rhea, Border Sentinel, guardian of tagtown: a resolute woman with a dark braided ponytail, ochre gambeson and burnished bronze light armor, amber half-cloak, holding a hooked ceremonial staff and a small brass lantern; border sentry and master of question tags. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/tagtown.png"
+    },
+    {
+      "id": "position-point",
+      "name": "Warden Orion",
+      "title": "Master Wayfinder",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Warden Orion, Master Wayfinder, guardian of position-point: a rugged bearded ranger in rust-orange cloak, weathered leather armor and brass surveying tools, carrying an ornate compass and a rolled map; master of prepositions and spatial relationships. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/position-point.png"
+    },
+    {
+      "id": "substitia",
+      "name": "Lady Nyra",
+      "title": "Envoy of the Many",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Lady Nyra, Envoy of the Many, guardian of substitia: a poised dark-skinned diplomat with silver hair ornaments, rose-red velvet travelling robes over fine armor, holding a silver theatrical half-mask at her side and an ivory-sealed letter; theme of pronoun identity and reference. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/substitia.png"
+    },
+    {
+      "id": "namesworth",
+      "name": "Archivist Edric",
+      "title": "Keeper of Names",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Archivist Edric, Keeper of Names, guardian of namesworth: an elderly Black scholar with cropped grey beard, rich turquoise and deep-teal layered robes, a heavy embossed noun codex under one arm and a brass keyring; a powerful calm library guardian. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/namesworth.png"
+    },
+    {
+      "id": "passaggia",
+      "name": "Ranger Saira",
+      "title": "Warden of Hidden Meaning",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Ranger Saira, Warden of Hidden Meaning, guardian of passaggia: an experienced woman canyon explorer with copper skin, windswept short dark hair, sandstone and ochre travelling leathers, a hood resting on shoulders, carrying a reading scroll and a compact spyglass; reading comprehension and context. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/passaggia.png"
+    },
+    {
+      "id": "mannerton",
+      "name": "Master Zephyr",
+      "title": "The Golden Messenger",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Master Zephyr, The Golden Messenger, guardian of mannerton: a lean graceful young male courier with wavy black hair, golden-yellow cape, dark leather riding armor, intricately buckled boots, holding a feathered dispatch baton and scroll case; adverbs, motion and precision. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/mannerton.png"
+    },
+    {
+      "id": "sequentia",
+      "name": "Architect Ilyan",
+      "title": "Keeper of the Ordered Path",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Architect Ilyan, Keeper of the Ordered Path, guardian of sequentia: a thoughtful middle-aged East Asian male surveyor in moss-green structured robes, brass clasps and protective leather shoulder armor, holding a folding measuring instrument and a stack of blank stone tablets; syntax and sentence ordering. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/sequentia.png"
+    },
+    {
+      "id": "descriptia",
+      "name": "Lady Vesper",
+      "title": "Mistress of Attributes",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Lady Vesper, Mistress of Attributes, guardian of descriptia: an elegant silver-haired mature woman in plum and violet embroidered court robes with a dark fitted breastplate, carrying a jewel-set magnifying lens and a painterly folio; adjectives, perceptive detail and mountain realm. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/descriptia.png"
+    },
+    {
+      "id": "lexicon-city",
+      "name": "Chancellor Lucian",
+      "title": "The Wordsmith",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Chancellor Lucian, The Wordsmith, guardian of lexicon-city: a scholarly red-haired nobleman with a short beard, crimson brocade greatcoat over dark steel armor and rich copper trim, carrying an ornate dictionary chained to his belt and a long quill; vocabulary, synonyms and antonyms. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/lexicon-city.png"
+    },
+    {
+      "id": "voicelands",
+      "name": "Herald Aelius",
+      "title": "Voice of the Twin Cities",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Herald Aelius, Voice of the Twin Cities, guardian of voicelands: a commanding dark-skinned male herald with close-cropped hair, sun-gold armor and a sand-colored cape, carrying a decorated medieval trumpet and a reversible two-sided heraldic shield; active and passive voice. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/voicelands.png"
+    },
+    {
+      "id": "junctionia",
+      "name": "Bridgekeeper Rowan",
+      "title": "Binder of Paths",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Bridgekeeper Rowan, Binder of Paths, guardian of junctionia: a broad-shouldered mature woman with auburn braided hair, forest-green cloak, dark leather and patinated bronze armor, holding an elaborately knotted staff and bridgewarden keys; conjunctions and logical connections. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/junctionia.png"
+    },
+    {
+      "id": "mayhaven",
+      "name": "Oracle Mira",
+      "title": "Warden of Possibility",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Oracle Mira, Warden of Possibility, guardian of mayhaven: a serene South Asian woman with long black hair bound in a silver circlet, deep-turquoise layered robes with silver embroidery and articulated bracers, holding a delicate brass astrolabe and a closed small book; modal verbs and possibility. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/mayhaven.png"
+    },
+    {
+      "id": "ifshire",
+      "name": "Seer Isolde",
+      "title": "Guardian of Unwritten Futures",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Seer Isolde, Guardian of Unwritten Futures, guardian of ifshire: a tall older woman with silver braids, slate-blue fur-lined travelling robes over silver armor, a branching crystal-tipped staff and a closed leather folio; conditional sentences and alternate futures, mountain frost realm. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/ifshire.png"
+    },
+    {
+      "id": "quotehaven",
+      "name": "Keeper Quill",
+      "title": "Chronicler of Voices",
+      "prompt": "Use case: stylized-concept. Asset type: transparent full-body guardian portrait for Grammaria fantasy grammar game. Primary subject: Keeper Quill, Chronicler of Voices, guardian of quotehaven: an expressive mature male bard-historian with dark curly hair and warm brown skin, amber and umber embroidered coat, leather satchel, holding a long unlettered parchment scroll and a carved recording quill; direct and reported speech. Style: highly detailed painterly realistic premium classic fantasy RPG character key art; believable anatomy, layered cloth, worn leather and engraved metal, warm key light with cool rim. ONE character only. Full body head to boots entirely inside 2:3 portrait frame, central silhouette with breathing room, three-quarter pose facing slightly left toward UI. Genuine transparent alpha background. No scenery, clouds, smoke, fog, pedestal, lettering, words, UI, collage, watermark or logos. Match the polished realistic art direction of Grammaria's existing regal archivist and masked capital ruler; give this character a unique face, costume and silhouette.",
+      "path": "public/characters/quotehaven.png"
+    }
+  ]
+}

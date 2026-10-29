@@ -10,12 +10,25 @@ async page => {
    await page.locator('.realm-index__entry').filter({has:page.getByText(name,{exact:true})}).click();
    await page.locator('.atlas-crossing').waitFor({state:'detached'});
    await page.waitForTimeout(800);
+   const skip = page.getByRole('button', { name: 'Skip', exact: true });
+   if (await skip.isVisible()) await skip.click();
+   await page.waitForTimeout(350);
    await page.screenshot({path:`output/playwright/review-${width}-${name}.png`});
+   if(name==='Centralia') {
+    await page.getByRole('button',{name:'Mute voice',exact:true}).click();
+    await page.locator('.capital-trial__answers button').nth(0).click();
+    await page.getByText('Study the timeline',{exact:true}).waitFor();
+    await page.getByRole('button',{name:'Try again',exact:true}).click();
+    await page.locator('.capital-trial__answers button').nth(1).click();
+    await page.getByText('A precise strike',{exact:true}).waitFor();
+    await page.getByRole('button',{name:'Try again',exact:true}).click();
+    check(await page.locator('.capital-trial__answers button:disabled').count()===0,'Capital trial did not reset');
+   }
    if(name==='Concordia') {
     await page.getByRole('button',{name:'Topic Study Guide'}).click();
     await page.getByText('Core Grammar Rule',{exact:true}).waitFor();
     await page.waitForTimeout(200);
-    check(await page.locator('.realm-tab--study').evaluate(el=>getComputedStyle(el).backgroundImage.includes('linear-gradient')), 'Study parchment lost its background');
+    check(await page.locator('.territory-pane--academy').evaluate(el=>getComputedStyle(el).backgroundImage.includes('linear-gradient')), 'Study parchment lost its background');
     await page.screenshot({path:`output/playwright/review-${width}-study.png`});
     await page.getByRole('button',{name:'LAUNCH ATTACK',exact:true}).click();
     await page.getByRole('button',{name:'FIRE ATTACK',exact:true}).waitFor();
@@ -24,10 +37,20 @@ async page => {
    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}: ${name} overflow`);
    await close();
   }
+  for(const [name,selector] of [['Daily Quest','.quest-scroll'],['Reward','.treasure-panel'],['Assaults','.events-panel'],['Ranking','.rankings-panel'],['Open commander profile for Arjun Verma','.commander-dossier']]) {
+   await page.getByRole('button',{name,exact:true}).click();
+   await page.locator(selector).waitFor();
+   await page.screenshot({path:`output/playwright/review-${width}-${selector.slice(1)}.png`});
+   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${width}: ${name} overflow`);
+   await page.keyboard.press('Tab');
+   check(await page.locator('.game-overlay').evaluate(el=>el.contains(document.activeElement)),`${name}: keyboard focus escaped`);
+   await close();
+  }
  }
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:900});await page.goto('http://127.0.0.1:3000');
  await page.getByRole('button',{name:/^Concordia,/}).click();await page.locator('.atlas-crossing').waitFor({state:'detached'});
+ await page.getByRole('button',{name:'Skip',exact:true}).click();
  await page.getByRole('button',{name:'LAUNCH ATTACK',exact:true}).click();
  await page.waitForTimeout(450);await page.screenshot({path:'output/playwright/review-battle-intro.png'});
  await page.waitForTimeout(700);await page.getByRole('button',{name:'Retreat',exact:true}).click();

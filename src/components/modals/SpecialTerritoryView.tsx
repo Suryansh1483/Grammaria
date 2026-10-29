@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Check, ChevronRight, Clock3, Coins, ScrollText, ShieldCheck, Sparkles, Swords, Trophy } from "lucide-react";
+import { ArrowLeft, BookOpen, Check, ChevronRight, Clock3, Coins, ScrollText, ShieldCheck, Sparkles, Swords, Trophy, Volume2, VolumeX, LockKeyhole } from "lucide-react";
 import { Territory } from "@/types/game";
+import { REALM_GUIDES } from "@/data/realm-guides";
+import { ATLAS_LAYOUT } from "@/data/atlas-layout";
 
 interface SpecialTerritoryViewProps {
   territory: Territory;
@@ -12,51 +14,35 @@ interface SpecialTerritoryViewProps {
   onStartAttack: (territory: Territory) => void;
 }
 
-const territoryTheme = {
-  artikel: {
-    image: "/territory-artikel.png",
-    guide: "/guide-archivist.png",
-    guideName: "Lady Aurelia",
-    guideTitle: "High Archivist",
-    kicker: "The golden scholar isles",
-    intro: "Every noun seeks its rightful banner. Master A, An and The to keep the isles in perfect order.",
-    accent: "gold",
-    icon: ScrollText,
-    dialogue: [
-      "Commander Arjun, the Article Isles have been expecting you.",
-      "A, An and The may be small banners—but choose the wrong one, and the meaning of an entire sentence changes.",
-    ],
-  },
-  temporalia: {
-    image: "/territory-temporalia.png",
-    guide: "/guide-timekeeper.png",
-    guideName: "Master Caelum",
-    guideTitle: "Keeper of Hours",
-    kicker: "The kingdom beyond time",
-    intro: "Past, present and future flow through the great clock. Command every tense and restore the timeline.",
-    accent: "blue",
-    icon: Clock3,
-    dialogue: [
-      "You have crossed into Temporalia, Commander. Here, every action leaves an echo in time.",
-      "Master the past, command the present, and the future path will reveal itself.",
-    ],
-  },
-} as const;
-
 export function SpecialTerritoryView({ territory, onClose, onStartAttack }: SpecialTerritoryViewProps) {
   const [section, setSection] = useState<"overview" | "academy">("overview");
   const [dialogueStep, setDialogueStep] = useState(0);
-  const theme = territoryTheme[territory.id as keyof typeof territoryTheme];
-  if (!theme) return null;
-  const Crest = theme.icon;
+  const [speaking, setSpeaking] = useState(false);
+  const theme = REALM_GUIDES[territory.id];
+  const introducing = dialogueStep < theme.dialogue.length;
+  const captured = territory.status === "captured";
+  const locked = territory.status === "locked" || territory.status === "capital-locked";
+  const originalRealm = territory.id === "artikel" || territory.id === "temporalia";
+  const Crest = territory.id === "artikel" ? ScrollText : territory.id === "temporalia" ? Clock3 : BookOpen;
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+  const stopVoice = () => { window.speechSynthesis?.cancel(); setSpeaking(false); };
+  const hearGuardian = () => {
+    if (!("speechSynthesis" in window)) return;
+    if (speaking) { stopVoice(); return; }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(introducing ? theme.dialogue[dialogueStep] : section === "academy" ? territory.studyGuide.summary : theme.intro);
+    utterance.lang = "en-IN";
+    utterance.rate = .9;
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = utterance.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
     <AnimatePresence>
-      <motion.div className={`territory-screen territory-screen--${theme.accent}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-        <Image src={theme.image} alt={`Fantasy landscape of ${territory.name}`} fill priority sizes="100vw" className="territory-screen__art" />
+      <motion.div className={`territory-screen territory-screen--${theme.accent} ${theme.landscape ? "" : "territory-screen--guardian"}`} data-realm={territory.id} data-status={territory.status} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        {theme.landscape ? <Image src={theme.landscape} alt={`Fantasy landscape of ${territory.name}`} fill priority sizes="100vw" className="territory-screen__art" /> : <div className="territory-screen__realm-art" aria-hidden="true" style={{ backgroundPosition: `${ATLAS_LAYOUT[territory.id].x}% ${ATLAS_LAYOUT[territory.id].y}%` }} />}
         <div className="territory-screen__shade" />
-        <div className="territory-screen__mist territory-screen__mist--one" />
-        <div className="territory-screen__mist territory-screen__mist--two" />
 
         <motion.div
           className="territory-guide"
@@ -72,24 +58,26 @@ export function SpecialTerritoryView({ territory, onClose, onStartAttack }: Spec
           <ArrowLeft /> <span>World Map</span>
         </motion.button>
 
+        <button type="button" className="guardian-voice" onClick={hearGuardian} aria-label={speaking ? "Stop guardian voice" : "Hear guardian"}>{speaking ? <VolumeX /> : <Volume2 />}</button>
         <div className={`territory-screen__content ${dialogueStep < theme.dialogue.length ? "is-introducing" : ""}`}>
           <motion.header initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: .1 }}>
             <div className="territory-crest"><Crest /><span className="territory-crest__ring" /></div>
             <h2>{territory.name}</h2>
             <span className="territory-alias">{territory.alias}</span>
-            <div className="territory-status"><ShieldCheck /> Territory secured · Level {territory.levelRequired}</div>
+            <div className="territory-status">{captured ? <ShieldCheck /> : locked ? <LockKeyhole /> : <Swords />}{captured ? "Territory secured" : locked ? "Gates sealed" : "Frontier contested"} · Level {territory.levelRequired}</div>
           </motion.header>
 
-          <motion.div className="territory-command" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: dialogueStep >= theme.dialogue.length ? 1 : .2 }} transition={{ delay: .2 }}>
+          <motion.div className="territory-command" inert={introducing} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: dialogueStep >= theme.dialogue.length ? 1 : .2 }} transition={{ delay: .2 }}>
             <nav>
-              <button type="button" onClick={() => setSection("overview")} aria-pressed={section === "overview"} className={section === "overview" ? "is-active" : ""}><Sparkles /> Overview</button>
-              <button type="button" onClick={() => setSection("academy")} aria-pressed={section === "academy"} className={section === "academy" ? "is-active" : ""}><BookOpen /> Academy</button>
+              <button type="button" onClick={() => setSection("overview")} aria-pressed={section === "overview"} className={section === "overview" ? "is-active" : ""}><Sparkles /> {originalRealm ? "Overview" : "War Command"}</button>
+              <button type="button" onClick={() => setSection("academy")} aria-pressed={section === "academy"} className={section === "academy" ? "is-active" : ""}><BookOpen /> {originalRealm ? "Academy" : "Topic Study Guide"}</button>
             </nav>
 
             <AnimatePresence mode="wait">
               {section === "overview" ? (
                 <motion.div key="overview" className="territory-pane" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }}>
                   <p className="territory-intro">{theme.intro}</p>
+                  <div className="guardian-resistance"><span>{captured ? "Student control" : "Enemy resistance"}</span><strong>{captured ? "Secured" : `${territory.enemyControl}%`}</strong><div><i style={{ width: `${captured ? 100 : territory.enemyControl}%` }} /></div></div>
                   <div className="territory-objective">
                     <span><Trophy /></span>
                     <div><small>Mastery mission</small><strong>{territory.topic}</strong><p>{territory.description}</p></div>
@@ -100,18 +88,18 @@ export function SpecialTerritoryView({ territory, onClose, onStartAttack }: Spec
                   </div>
                 </motion.div>
               ) : (
-                <motion.div key="academy" className="territory-pane" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
-                  <p className="territory-intro">{territory.studyGuide.summary}</p>
+                <motion.div key="academy" className="territory-pane territory-pane--academy" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
+                  <h3>Core Grammar Rule</h3><p className="territory-intro">{territory.studyGuide.summary}</p><h3>Key Tactical Rules</h3>
                   <div className="territory-rules">
                     {territory.studyGuide.keyRules.map((rule, index) => <div key={rule}><span>{index + 1}</span><p>{rule}</p></div>)}
                   </div>
-                  {territory.studyGuide.examples[0] && <div className="territory-example"><Check /><span><small>Scout&apos;s example</small>{territory.studyGuide.examples[0].correct}</span></div>}
+                  <h3>Battlefield Examples</h3>{territory.studyGuide.examples.map(example => <div key={example.correct} className="territory-example"><Check /><span><small>Correct</small>{example.correct}<small className="guardian-incorrect">Incorrect: {example.incorrect}</small></span></div>)}
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <button type="button" className="territory-cta" onClick={() => { onClose(); onStartAttack(territory); }}>
-              <span><Swords /> Begin Training</span><ChevronRight />
+            <button type="button" className="territory-cta" disabled={locked} onClick={() => { onClose(); onStartAttack(territory); }}>
+              <span><Swords /> {locked ? "Realm locked" : captured ? "Begin Training" : "LAUNCH ATTACK"}</span><ChevronRight />
             </button>
           </motion.div>
         </div>
@@ -132,16 +120,16 @@ export function SpecialTerritoryView({ territory, onClose, onStartAttack }: Spec
               </div>
               <p>{theme.dialogue[dialogueStep]}</p>
               <div className="guide-dialogue__actions">
-                <button type="button" onClick={() => setDialogueStep(theme.dialogue.length)} className="guide-dialogue__skip">Skip</button>
-                <button type="button" onClick={() => setDialogueStep((step) => step + 1)} className="guide-dialogue__next">
-                  {dialogueStep === theme.dialogue.length - 1 ? "Enter Academy" : "Continue"}<ChevronRight />
+                <button type="button" onClick={() => { stopVoice(); setDialogueStep(theme.dialogue.length); }} className="guide-dialogue__skip">Skip</button>
+                <button type="button" onClick={() => { stopVoice(); setDialogueStep((step) => step + 1); }} className="guide-dialogue__next">
+                  {dialogueStep === theme.dialogue.length - 1 ? "Enter Realm" : "Continue"}<ChevronRight />
                 </button>
               </div>
               <span className="guide-dialogue__tail" />
             </motion.div>
           )}
         </AnimatePresence>
-        <span className="territory-screen__hint">Click academy to inspect the grammar scrolls</span>
+        <span className="territory-screen__hint">{originalRealm ? "Open the academy" : "Open the study guide"} to inspect the grammar scrolls</span>
       </motion.div>
     </AnimatePresence>
   );

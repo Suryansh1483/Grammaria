@@ -1,0 +1,27 @@
+/* A frozen battlefield breaks into finite, inert fragments; the royal seal survives. */
+.victory-scene { position: fixed; inset: 0; z-index: 60; overflow: hidden; display: grid; place-items: center; padding: 32px 20px; background: radial-gradient(ellipse at 50% 42%,#24312b 0,#101c1d 42%,#060e12 80%); color: #e9debd; }
+.victory-debris { position: absolute; inset: 0; overflow: hidden; pointer-events: none; perspective: 1000px; }
+.victory-shard { position: absolute; animation: victory-collapse 1400ms cubic-bezier(.55,.02,.8,.5) var(--delay) both; transform-origin: 50% 70%; }
+.victory-shard * { animation: none !important; transition: none !important; }
+@keyframes victory-collapse { 0%,9% { transform: none; opacity: 1; } 24% { transform: translate(calc(var(--drift) * .12),-12px) rotate(calc(var(--turn) * .12)); opacity: 1; } 100% { transform: translate(var(--drift),110vh) rotate(var(--turn)) rotateX(35deg); opacity: 0; } }
+.victory-fracture { position: absolute; left: 50%; top: 50%; width: min(78vw,800px); aspect-ratio: 1; border: 1px solid #c7b274; border-radius: 50%; pointer-events: none; animation: victory-impact 950ms ease-out both; }
+@keyframes victory-impact { from { transform: translate(-50%,-50%) scale(.12); opacity: .65; } to { transform: translate(-50%,-50%) scale(1.8); opacity: 0; } }
+.victory-reveal { position: relative; width: min(720px,100%); max-height: calc(100svh - 100px); overflow-y: auto; text-align: center; animation: victory-ascend 1300ms cubic-bezier(.16,1,.3,1) 750ms both; }
+@keyframes victory-ascend { from { opacity: 0; transform: translateY(48px) scale(.88); filter: blur(5px); visibility: hidden; } to { opacity: 1; transform: none; filter: none; visibility: visible; } }
+.victory-seal { display: flex; align-items: center; justify-content: center; gap: 28px; margin-bottom: 30px; }
+.victory-seal > svg { width: 80px; height: 80px; padding: 16px; stroke-width: 1.1; color: #ddc387; border: 1px solid #9f8854; outline: 1px solid #9f885455; outline-offset: 8px; border-radius: 50%; }
+.victory-seal > span { width: min(15vw,100px); height: 1px; background: #9f8854; }
+.victory-reveal h2 { font: 600 clamp(30px,5vw,60px)/1.06 var(--font-display),Georgia,serif; text-wrap: balance; color: #f0dfb3; }
+.victory-realm { margin-top: 18px; font: 500 clamp(25px,3vw,36px)/1.2 var(--font-cinzel),serif; color: #c5af7c; }
+.victory-reveal p:not(.victory-realm) { max-width: 45ch; margin: 18px auto 0; color: #c3c8b9; font-size: 14px; line-height: 1.7; }
+.victory-spoils { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px 30px; margin: 32px 0; color: #ddc78d; font-size: 13px; font-variant-numeric: tabular-nums; }
+.victory-spoils span { display: inline-flex; align-items: center; gap: 8px; }
+.victory-spoils svg { width: 18px; stroke-width: 1.4; }
+.victory-return { display: inline-flex; align-items: center; justify-content: center; gap: 18px; min-height: 50px; padding: 14px 28px; color: #15201c; background: #cfb779; font: 600 12px/1.3 var(--font-cinzel),serif; transition: background .2s,transform .2s; }
+.victory-return:hover { background: #e5d19b; transform: translateY(-2px); }
+.victory-return svg { width: 18px; }
+.victory-skip { position: absolute; top: max(20px,env(safe-area-inset-top)); right: 24px; min-height: 44px; padding: 10px; z-index: 2; font-size: 12px; color: #c5c7b7; }
+.victory-scene[data-skipped="true"] .victory-reveal { animation: none; }
+.victory-scene[data-skipped="true"] .victory-fracture,.victory-scene[data-skipped="true"] .victory-skip { display: none; }
+@media (max-width:650px) { .victory-seal { margin-bottom: 24px; }.victory-seal > svg { width: 66px; height: 66px; }.victory-spoils { margin-block: 24px; gap: 16px; }.victory-reveal p:not(.victory-realm) { font-size: 13px; } }
+@media (prefers-reduced-motion:reduce) { .victory-debris,.victory-fracture,.victory-skip { display: none; }.game-shell .victory-reveal { animation: victory-calm 180ms ease-out both !important; }.victory-return:hover { transform: none; }@keyframes victory-calm { from { opacity: 0; }to { opacity: 1; } } }

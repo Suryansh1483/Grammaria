@@ -29,6 +29,8 @@ export default function Home() {
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isEventsOpen, setIsEventsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [claimedQuests, setClaimedQuests] = useState<number[]>([]);
+  const [treasureClaimed, setTreasureClaimed] = useState(false);
   const [travellingTo, setTravellingTo] = useState<Territory | null>(null);
   const travelLocked = useRef(false);
   const travelFocus = useRef<HTMLElement | null>(null);
@@ -66,7 +68,7 @@ export default function Home() {
 
     setPlayer(prev => {
       const newXp = prev.xp + xpEarned;
-      const newCapturedCount = prev.capturedTerritoriesCount + 1;
+      const newCapturedCount = prev.capturedTerritoriesCount + (attackTerritory?.status === 'captured' ? 0 : 1);
       let newLevel = prev.level;
       let newMaxXp = prev.maxXp;
 
@@ -87,14 +89,19 @@ export default function Home() {
   };
 
   // Handle Rewards from Daily Quest or Chest
-  const handleClaimXP = (amount: number) => {
+  const handleClaimQuest = (id: number, amount: number, coins: number) => {
+    if (claimedQuests.includes(id)) return;
+    setClaimedQuests(previous => [...previous, id]);
     setPlayer(prev => ({
       ...prev,
       xp: prev.xp + amount,
+      coins: prev.coins + coins,
     }));
   };
 
   const handleClaimRewardCoins = (coins: number, gems: number) => {
+    if (treasureClaimed) return;
+    setTreasureClaimed(true);
     setPlayer(prev => ({
       ...prev,
       coins: prev.coins + coins,
@@ -114,9 +121,9 @@ export default function Home() {
   const screen = attackTerritory ? 'battle' : selectedTerritory ? `realm-${selectedTerritory.id}` :
     isDailyChallengeOpen ? 'quests' : isDailyRewardOpen ? 'treasure' : isLeaderboardOpen ? 'rankings' :
     isEventsOpen ? 'events' : isProfileOpen ? 'profile' : null;
-  const kind = attackTerritory ? 'battle' : selectedTerritory?.id === 'centralia' ? 'capital' :
+  const kind = attackTerritory ? attackTerritory.status === 'captured' ? 'assessment' : 'battle' : selectedTerritory?.id === 'centralia' ? 'capital' :
     selectedTerritory ? 'realm' : isProfileOpen ? 'profile' : isDailyChallengeOpen ? 'quest' : isDailyRewardOpen ? 'reward' : isEventsOpen ? 'events' : 'panel';
-  const screenLabel = attackTerritory ? `${attackTerritory.name} battle` : selectedTerritory ? `${selectedTerritory.name} realm` :
+  const screenLabel = attackTerritory ? `${attackTerritory.name} ${kind === 'assessment' ? 'assessment' : 'battle'}` : selectedTerritory ? `${selectedTerritory.name} realm` :
     isDailyChallengeOpen ? 'Daily quests' : isDailyRewardOpen ? 'Daily treasure' : isLeaderboardOpen ? 'Class rankings' :
     isEventsOpen ? 'Classroom assaults' : 'Commander profile';
 
@@ -148,8 +155,8 @@ export default function Home() {
       />
       </div>
 
-      <AnimatePresence mode="wait">
-      {screen && <GameOverlay key={screen} label={screenLabel} kind={kind} onClose={closeScreen} inputLocked={travellingTo !== null} title={attackTerritory?.name} territoryId={attackTerritory?.id} returnFocus={selectedTerritory || attackTerritory ? travelFocus : undefined}>
+      <AnimatePresence mode="wait" custom={attackTerritory ? "battle" : null}>
+      {screen && <GameOverlay key={screen} label={screenLabel} kind={kind} onClose={closeScreen} inputLocked={travellingTo !== null} title={attackTerritory?.name} returnFocus={selectedTerritory || attackTerritory ? travelFocus : undefined}>
 
       {/* Territory Detail & War Command Modal */}
       {selectedTerritory && !attackTerritory && <TerritoryModal
@@ -161,7 +168,7 @@ export default function Home() {
       {/* Live Interactive Attack Battle Session Modal */}
       {attackTerritory && <AttackModal
         territory={attackTerritory}
-        onClose={() => setAttackTerritory(null)}
+        onClose={closeScreen}
         onTerritoryCaptured={handleTerritoryCaptured}
       />}
 
@@ -169,7 +176,8 @@ export default function Home() {
       {isDailyChallengeOpen && (
         <DailyChallengeModal
           onClose={() => setIsDailyChallengeOpen(false)}
-          onClaimXP={handleClaimXP}
+          claimed={claimedQuests}
+          onClaimReward={handleClaimQuest}
         />
       )}
 
@@ -177,6 +185,7 @@ export default function Home() {
       {isDailyRewardOpen && (
         <DailyRewardModal
           onClose={() => setIsDailyRewardOpen(false)}
+          claimed={treasureClaimed}
           onClaimRewards={handleClaimRewardCoins}
         />
       )}

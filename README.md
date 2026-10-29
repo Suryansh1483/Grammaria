@@ -10,7 +10,9 @@ An illustrated fantasy strategy game for learning English grammar. Players explo
 - Individual transparent territory illustrations with coastline-aware hover and selection
 - Pointer-anchored zoom, drag and touch panning, pinch zoom, and keyboard map controls
 - Dedicated illustrated realm experiences for Artikel and Temporalia
-- Animated guide characters and dialogue-driven introductions
+- Distinct guardian portraits for all 18 realms, with dialogue and optional narration
+- Clouds reserved for realm travel; iron-gate war banners and parchment-seal assessment transitions
+- Battlefield fracture on victory, followed by a royal seal reveal, with skip and reduced-motion options
 - Grammar study guides, examples, rewards, and battle questions
 - Commander profile hall with campaign progress and mastery insights
 - Daily quests, rewards, events, and leaderboard flows
@@ -50,6 +52,8 @@ With the development server running, check the main game flows in a browser:
 npx --package @playwright/cli playwright-cli open http://127.0.0.1:3000
 npx --package @playwright/cli playwright-cli run-code --filename=tests/ui-smoke.pw
 npx --package @playwright/cli playwright-cli run-code --filename=tests/atlas-interactions.pw
+npx --package @playwright/cli playwright-cli run-code --filename=tests/guardians-and-transitions.pw
+npx --package @playwright/cli playwright-cli run-code --filename=tests/victory-sequence.pw
 ```
 
 Camera geometry tests use Node.js 24's TypeScript support:
@@ -89,3 +93,5 @@ public/                 Map, realm, and character artwork
 ## Current status
 
 Grammaria is an actively developed prototype. Major UI and gameplay milestones are committed separately so the project history remains easy to follow.
+
+Progress and reward claims last for the current page session; refreshing resets the demo. Quests, rankings, and classroom events use sample data. Browser narration depends on installed system voices.

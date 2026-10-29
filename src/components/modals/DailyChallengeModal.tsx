@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
 import { BookOpen, Check, CheckCircle2, ChevronRight, Clock3, Coins, Flame, ShieldCheck, Sparkles, Swords, Target, Trophy, X, Zap } from "lucide-react";
 
-interface DailyChallengeModalProps { onClose: () => void; onClaimXP: (amount: number) => void; }
+interface DailyChallengeModalProps { onClose: () => void; claimed: number[]; onClaimReward: (id: number, xp: number, coins: number) => void; }
 
 const quests = [
   { id: 1, title: "Break Two Defenses", desc: "Challenge any two active territories and weaken their resistance.", xp: 150, coins: 200, progress: "1 / 2", percent: 50, icon: Swords, tier: "Battle order" },
@@ -12,18 +11,16 @@ const quests = [
   { id: 3, title: "Gather Realm Intelligence", desc: "Open a study guide and inspect the rules of an unconquered realm.", xp: 100, coins: 150, progress: "1 / 1", percent: 100, icon: BookOpen, tier: "Scholar order" },
 ];
 
-export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClose, onClaimXP }) => {
-  const [claimed, setClaimed] = useState<number[]>([]);
+export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClose, claimed, onClaimReward }) => {
   const present = useIsPresent();
   const reduced = useReducedMotion();
   const compact = "inset(49.5% 0 49.5% 0)";
   const completedCount = quests.filter((quest) => quest.percent === 100).length;
   const claimedXP = quests.filter((quest) => claimed.includes(quest.id)).reduce((sum, quest) => sum + quest.xp, 0);
 
-  const handleClaim = (id: number, xp: number) => {
+  const handleClaim = (id: number, xp: number, coins: number) => {
     if (claimed.includes(id)) return;
-    setClaimed((current) => [...current, id]);
-    onClaimXP(xp);
+    onClaimReward(id, xp, coins);
   };
 
   return (
@@ -62,7 +59,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ onClos
                 </div>
                 <div className="quest-card__reward">
                   <span><Zap /> +{quest.xp} XP</span><span><Coins /> +{quest.coins}</span>
-                  <button type="button" disabled={!isReady || isClaimed} onClick={() => handleClaim(quest.id, quest.xp)}>
+                  <button type="button" disabled={!isReady || isClaimed} onClick={() => handleClaim(quest.id, quest.xp, quest.coins)}>
                     {isClaimed ? <><CheckCircle2 /> Claimed</> : isReady ? <><Trophy /> Claim</> : <>In progress <ChevronRight /></>}
                   </button>
                 </div>

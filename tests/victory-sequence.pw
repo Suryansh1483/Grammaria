@@ -1,0 +1,64 @@
+async page => {
+  const check=(value,message)=>{if(!value)throw new Error(message)};
+  const errors=[];page.on('pageerror',error=>errors.push(error.message));
+  const open=async(name,training=false)=>{
+    await page.getByRole('button',{name:new RegExp(`^${name},`)}).click();
+    await page.locator('.atlas-crossing').waitFor({state:'detached'});
+    await page.getByRole('button',{name:'Skip',exact:true}).click();
+    await page.getByRole('button',{name:training?'Begin Training':'LAUNCH ATTACK',exact:true}).click();
+    await page.locator('.activity-transition').waitFor({state:'detached'});
+    await page.getByRole('button',{name:'FIRE ATTACK',exact:true}).waitFor();
+  };
+  const win=async(strikes)=>{
+    for(let i=0;i<strikes;i++){
+      await page.locator('.battle-panel button[aria-pressed]').nth(1).click();
+      await page.getByRole('button',{name:'FIRE ATTACK',exact:true}).click();
+      if(i<strikes-1)await page.getByRole('button',{name:'NEXT STRIKE',exact:true}).click();
+    }
+    await page.locator('.victory-scene').waitFor();
+  };
+  const back=async()=>{
+    await page.getByRole('button',{name:'RETURN TO MAP',exact:true}).click();
+    await page.locator('.game-overlay').waitFor({state:'detached'});
+    check(await page.locator('.victory-shard').count()===0,'Victory fragments survived exit');
+  };
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('http://127.0.0.1:3000');
+  await open('Artikel',true);await win(4);
+  check(await page.locator('.victory-shard').count()===12,'Battlefield did not fragment');
+  check(await page.locator('.victory-debris').evaluate(el=>el.inert&&el.getAttribute('aria-hidden')==='true'),'Fragments exposed to keyboard or assistive tools');
+  check(await page.locator('.atlas-crossing__cloud,.realm-return-clouds,.war-gate').count()===0,'Clouds/gates leaked into victory');
+  await page.waitForTimeout(330);await page.screenshot({path:'output/playwright/victory-fracture.png'});
+  await page.waitForTimeout(650);await page.screenshot({path:'output/playwright/victory-emerging.png'});
+  await page.locator('.victory-shard').waitFor({state:'detached'});
+  await page.getByRole('heading',{name:'ASSESSMENT CONQUERED!',exact:true}).waitFor();
+  await page.waitForTimeout(450);await page.screenshot({path:'output/playwright/victory-desktop.png'});
+  await back();
+  check(await page.locator('.campaign-progress strong').innerText()==='6 / 18 realms secured','Training counted as a new capture');
+  await open('Concordia');await win(3);
+  await page.getByRole('button',{name:'Skip celebration',exact:true}).click();
+  check(await page.locator('.victory-shard').count()===0,'Skip left falling fragments');
+  await page.getByRole('heading',{name:'TERRITORY CAPTURED!',exact:true}).waitFor();
+  await back();
+  check(await page.locator('.campaign-progress strong').innerText()==='7 / 18 realms secured','New conquest did not increment capture count');
+  await page.setViewportSize({width:390,height:844});
+  await open('Artikel',true);await win(4);
+  await page.waitForTimeout(2200);await page.screenshot({path:'output/playwright/victory-phone.png'});
+  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Victory overflows phone');
+  check(await page.getByRole('button',{name:'RETURN TO MAP',exact:true}).isVisible(),'Phone return button hidden');
+  await back();
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.setViewportSize({width:320,height:568});
+  await open('Artikel',true);await win(4);
+  check(await page.locator('.victory-shard').count()===0,'Reduced motion still fragments');
+  check(await page.locator('.victory-reveal').evaluate(el=>getComputedStyle(el).animationName)==='victory-calm','Reduced motion lost calm reveal');
+  await back();
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await open('Artikel',true);await win(4);
+  await page.keyboard.press('Escape');
+  await page.locator('.game-overlay').waitFor({state:'detached'});
+  check(await page.locator('.victory-shard').count()===0,'Interrupted victory leaked fragments');
+  check(errors.length===0,errors.join('\n'));
+  console.log('PASS: assessment/conquest wins, 12 inert fragments, slow reveal, skip, cleanup, Escape, rewards/capture count, desktop/phone/narrow layout, reduced motion.');
+}

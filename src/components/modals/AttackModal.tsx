@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Territory, GrammarQuestion } from '@/types/game';
-import { X, Swords, ShieldAlert, CheckCircle, XCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Swords, ShieldAlert, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
+import { VictoryScene, type BattleSnapshot } from '@/components/VictoryScene';
 
 interface AttackModalProps {
   territory: Territory | null;
@@ -23,6 +23,8 @@ export const AttackModal: React.FC<AttackModalProps> = ({
   const [isCorrect, setIsCorrect] = useState(false);
   const [enemyHealth, setEnemyHealth] = useState(territory?.enemyControl || 80);
   const [isVictorious, setIsVictorious] = useState(false);
+  const panel = useRef<HTMLDivElement>(null);
+  const snapshot = useRef<BattleSnapshot | null>(null);
 
   if (!territory) return null;
 
@@ -54,13 +56,11 @@ export const AttackModal: React.FC<AttackModalProps> = ({
       setEnemyHealth(newHealth);
 
       if (newHealth === 0) {
+        if (panel.current) {
+          const { left, top, width, height } = panel.current.getBoundingClientRect();
+          snapshot.current = { element: panel.current.cloneNode(true) as HTMLElement, left, top, width, height };
+        }
         setIsVictorious(true);
-        confetti({
-          disableForReducedMotion: true,
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
         onTerritoryCaptured(territory.id, territory.xpReward, territory.coinsReward);
       }
     }
@@ -74,13 +74,16 @@ export const AttackModal: React.FC<AttackModalProps> = ({
     setSelectedOption(null);
     setIsAnswered(false);
     setIsCorrect(false);
-    setCurrentQuestionIndex(prev => (prev + 1) % territory.sampleQuestions.length);
+    setCurrentQuestionIndex(prev => (prev + 1) % Math.max(1, territory.sampleQuestions.length));
   };
+
+  if (isVictorious) return <VictoryScene territory={territory} snapshot={snapshot} onClose={onClose} />;
 
   return (
     <AnimatePresence>
       <div className="battle-scene fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-lg">
         <motion.div
+          ref={panel}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
@@ -126,27 +129,6 @@ export const AttackModal: React.FC<AttackModalProps> = ({
           {/* Question & Attack Area */}
           <div className="p-6 space-y-6 max-h-[65vh] overflow-y-auto">
             <AnimatePresence mode="wait" initial={false}>
-            {isVictorious ? (
-              <motion.div key="victory" className="text-center py-8 space-y-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                <div className="w-20 h-20 mx-auto bg-amber-500/20 border-2 border-amber-400 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-10 h-10 text-amber-300" />
-                </div>
-                <h2 className="font-cinzel text-3xl font-black text-amber-200 tracking-wide">
-                  TERRITORY CAPTURED!
-                </h2>
-                <p className="text-sm text-slate-300 max-w-md mx-auto">
-                  You have broken {territory.name}&apos;s defenses! This realm is now under student conquest.
-                </p>
-                <div className="flex justify-center gap-6 text-sm font-bold pt-2">
-                  <span className="text-amber-400 bg-amber-950/60 px-4 py-2 rounded-xl border border-amber-500/40">
-                    +{territory.xpReward} XP Earned
-                  </span>
-                  <span className="text-yellow-400 bg-yellow-950/60 px-4 py-2 rounded-xl border border-yellow-500/40">
-                    +{territory.coinsReward} Coins Earned
-                  </span>
-                </div>
-              </motion.div>
-            ) : (
               <motion.div key={`question-${currentQuestionIndex}`} className="space-y-6" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: .16 }}>
                 {/* Question Box */}
                 <motion.div key={currentQuestion.id} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} className="battle-question bg-slate-900/80 border border-amber-700/50 rounded-xl p-5 shadow-inner">
@@ -230,7 +212,6 @@ export const AttackModal: React.FC<AttackModalProps> = ({
                   </motion.div>
                 )}
               </motion.div>
-            )}
             </AnimatePresence>
           </div>
 
@@ -243,14 +224,7 @@ export const AttackModal: React.FC<AttackModalProps> = ({
               Retreat
             </button>
 
-            {isVictorious ? (
-              <button
-                onClick={onClose}
-                className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-cinzel font-black text-sm shadow-lg hover:scale-105 transition"
-              >
-                RETURN TO MAP
-              </button>
-            ) : !isAnswered ? (
+            {!isAnswered ? (
               <button
                 disabled={selectedOption === null}
                 onClick={handleFireAttack}

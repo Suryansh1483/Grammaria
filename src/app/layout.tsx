@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "./premium.css";
 import "./atlas.css";
+import "./guardians.css";
+import "./victory.css";
 
 const cinzel = localFont({
   src: "../../public/fonts/Cinzel-latin.woff2",

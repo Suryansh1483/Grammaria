@@ -1,0 +1,90 @@
+/* Realm guardians share the established full-screen character stage. */
+.territory-screen--purple { --realm: #c1a0d0; --realm-soft: #f0dff5; --realm-dark: #503853; }
+.territory-screen--teal { --realm: #7fc3bd; --realm-soft: #dbf1e9; --realm-dark: #244e50; }
+.territory-screen--green { --realm: #a1b77a; --realm-soft: #e7edcd; --realm-dark: #3b4e2d; }
+.territory-screen--rose { --realm: #d49eac; --realm-soft: #f7dce3; --realm-dark: #653c49; }
+.territory-screen--amber { --realm: #cca16c; --realm-soft: #f3dfbd; --realm-dark: #62482a; }
+.territory-screen--red { --realm: #ca9385; --realm-soft: #f3d6c1; --realm-dark: #663d36; }
+.territory-screen__realm-art { position: absolute; z-index: -4; inset: 0; opacity: .6; background: url('/map-bg-ornate.jpg') center / auto 350% no-repeat; filter: saturate(.65); }
+.territory-screen__content > header, .territory-command { flex-shrink: 0; }
+.territory-screen[data-status="enemy-controlled"] .territory-status { color: #e4c4b3; border-color: #8e6151; background: #392621aa; }
+.territory-screen[data-status="accessible"] .territory-status { color: var(--realm-soft); border-color: var(--realm-dark); background: #182b2baa; }
+.territory-screen--guardian { background: #0c171b; }
+.territory-screen--guardian .territory-screen__shade { background: linear-gradient(90deg,#09161bf5 0%,#0b171be8 32%,#0b171b66 68%,#0b171b55),linear-gradient(0deg,#081319,transparent 50%); }
+.territory-screen--guardian .territory-guide { right: 1vw; width: min(44vw,660px); height: 92svh; bottom: 0; }
+.territory-screen--guardian .territory-guide__image { filter: drop-shadow(-20px 24px 24px #0009); }
+.guardian-voice { position: absolute; right: 24px; top: 20px; z-index: 9; display: grid; place-items: center; width: 44px; height: 44px; color: var(--realm-soft); border: 1px solid var(--realm-dark); background: #0a171bd9; border-radius: 3px; }
+.guardian-voice svg { width: 18px; }
+.guardian-resistance { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-block: 20px; font-size: 12px; color: #d8d5c4; }
+.guardian-resistance > div { grid-column: 1/-1; height: 4px; background: #53605766; }
+.guardian-resistance i { display: block; height: 100%; background: var(--realm); }
+.territory-pane h3 { font: 600 25px/1.2 var(--font-display),Georgia,serif; color: var(--realm-soft); margin-bottom: 12px; }
+.territory-pane h3:not(:first-child) { margin-top: 24px; }
+.guardian-incorrect { margin-top: 10px; color: #ddb4a6 !important; }
+.territory-cta:disabled { opacity: .55; }
+.territory-screen__content.is-introducing .territory-command { filter: saturate(.6); }
+.territory-screen .guide-dialogue__skip { color: #d6d7c6; }
+/* War: heavy iron gates, cloth standards and one decisive strike. */
+.activity-transition { position: absolute; inset: 0; z-index: 120; display: grid; place-items: center; overflow: hidden; pointer-events: none; color: #eee0bd; }
+.war-gate { position: absolute; top: 0; bottom: 0; width: 50.5%; background: linear-gradient(100deg,#10181b,#28302e 45%,#11191b); box-shadow: inset 0 0 70px #000b; }
+.war-gate::before, .war-gate::after { content: ""; position: absolute; left: 0; right: 0; height: 16px; background: linear-gradient(#4b4c3c,#1e2828 45%,#101719); box-shadow: 0 8px 14px #0008; }
+.war-gate::before { top: 22%; }.war-gate::after { bottom: 22%; }
+.war-gate--left { left: 0; border-right: 3px solid #8a7957; animation: war-gate-left 1050ms cubic-bezier(.65,0,.25,1) both; }
+.war-gate--right { right: 0; border-left: 3px solid #8a7957; animation: war-gate-right 1050ms cubic-bezier(.65,0,.25,1) both; }
+.war-banner { position: absolute; top: 0; bottom: 20%; width: 28%; background: linear-gradient(90deg,#411f1e,#793f32 35%,#552b26 80%,#381b1b); border-inline: 2px solid #ae9061; clip-path: polygon(0 0,100% 0,100% 100%,50% 91%,0 100%); }
+.war-gate--left .war-banner { right: 20%; }.war-gate--right .war-banner { left: 20%; }
+.activity-transition__title { position: relative; width: min(850px,90%); text-align: center; padding: 28px; animation: war-title 1050ms ease both; }
+.activity-transition__title > svg { display: block; width: 66px; height: 66px; stroke-width: 1.1; margin: 0 auto 24px; color: #d5b777; }
+.activity-transition__title h2 { font: 500 clamp(34px,5vw,68px)/1.06 var(--font-display),Georgia,serif; }
+.activity-transition__title p { margin-top: 18px; color: #d2ccb8; font: 400 13px/1.6 var(--font-inter),sans-serif; }
+.war-strike { position: absolute; left: 50%; top: 25%; width: 2px; height: 50%; background: #f4de9a; box-shadow: 0 0 18px #e2ad5e88; transform: rotate(28deg); animation: war-strike 1050ms ease both; }
+@keyframes war-gate-left { 0% { transform: translateX(-101%); } 24%,65% { transform: translateX(0); } 100% { transform: translateX(-101%); } }
+@keyframes war-gate-right { 0% { transform: translateX(101%); } 24%,65% { transform: translateX(0); } 100% { transform: translateX(101%); } }
+@keyframes war-title { 0%,17% { opacity: 0; transform: translateY(10px); } 32%,65% { opacity: 1; transform: none; } 90%,100% { opacity: 0; transform: translateY(-8px); } }
+@keyframes war-strike { 0%,20% { opacity: 0; scale: 1 0; } 26% { opacity: .85; scale: 1 1; } 45%,100% { opacity: 0; scale: 1 1; } }
+.activity-transition[data-direction="exit"] .war-gate--left { animation: war-close-left 520ms ease both; }
+.activity-transition[data-direction="exit"] .war-gate--right { animation: war-close-right 520ms ease both; }
+.activity-transition[data-direction="exit"] .war-strike { display: none; }
+.activity-transition[data-direction="exit"] .activity-transition__title { animation: activity-close-title 520ms ease both; }
+@keyframes war-close-left { from { transform: translateX(-101%); opacity: 1; } 55% { transform: translateX(0); opacity: 1; } to { transform: translateX(0); opacity: 0; } }
+@keyframes war-close-right { from { transform: translateX(101%); opacity: 1; } 55% { transform: translateX(0); opacity: 1; } to { transform: translateX(0); opacity: 0; } }
+@keyframes activity-close-title { 0%,20% { opacity: 0; } 55% { opacity: 1; } 100% { opacity: 0; } }
+/* Assessment: the academy's parchment and wax seal, without environmental clouds. */
+.activity-transition--assessment { color: #3f3322; background: #0c171be8; animation: assessment-curtain 900ms ease both; }
+.assessment-parchment { position: absolute; inset: 15% 12%; background: linear-gradient(95deg,#c4af83,#efe2c3 8%,#e4d3ad 92%,#bda276); box-shadow: 0 24px 70px #0008; animation: assessment-unseal 900ms cubic-bezier(.65,0,.25,1) both; }
+.assessment-parchment::after { content: ""; position: absolute; inset: 16px; border: 1px solid #8a714954; }
+.assessment-seal { position: absolute; bottom: 8%; left: calc(50% - 25px); display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; color: #d4ad77; background: #6a342e; box-shadow: 0 4px 9px #4b291c44,inset 0 0 0 4px #96574a; animation: assessment-seal 900ms ease both; }
+.assessment-seal svg { width: 24px; stroke-width: 1.3; }
+.activity-transition--assessment .activity-transition__title { animation-duration: 900ms; }
+.activity-transition--assessment .activity-transition__title > svg { color: #745832; }
+.activity-transition--assessment .activity-transition__title p { color: #68553a; }
+@keyframes assessment-curtain { 0%,75% { opacity: 1; } to { opacity: 0; } }
+@keyframes assessment-unseal { from { clip-path: inset(49% 0); } 36%,78% { clip-path: inset(0); } to { clip-path: inset(0); } }
+@keyframes assessment-seal { 0%,30% { opacity: 0; transform: scale(1.2); } 45%,100% { opacity: 1; transform: scale(1); } }
+.activity-transition--assessment[data-direction="exit"] { animation: assessment-close 520ms ease both; }
+.activity-transition--assessment[data-direction="exit"] .assessment-parchment { animation: assessment-roll 520ms ease both; }
+.activity-transition--assessment[data-direction="exit"] .assessment-seal { animation: assessment-seal 520ms ease reverse both; }
+@keyframes assessment-roll { from { clip-path: inset(0); } to { clip-path: inset(49% 0); } }
+@keyframes assessment-close { 0%,65% { opacity: 1; } to { opacity: 0; } }
+@media (max-width: 650px) {
+  .territory-screen--guardian .territory-guide { right: -20%; width: 88vw; height: 78svh; opacity: .28; }
+  .territory-screen--guardian:has(.guide-dialogue) .territory-guide { top: 60px; right: 0; bottom: auto; width: 76vw; height: 60svh; opacity: .9; }
+  .territory-screen--guardian:has(.guide-dialogue) .territory-screen__content { opacity: .25; }
+  .guardian-voice { top: 18px; right: 16px; }
+  .assessment-parchment { inset: 18% 4%; }
+  .activity-transition__title { padding: 18px; }
+  .activity-transition__title h2 { font-size: 36px; }
+  .activity-transition__title p { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .activity-transition { display: none; }
+}
+.territory-pane--academy { background: linear-gradient(95deg,#d1bd96,#eee1c2 12%,#e4d4af 90%,#c6ac7e); color: #453822; }
+.territory-pane--academy h3 { color: #594327; }
+.territory-pane--academy .territory-intro, .territory-pane--academy .territory-rules p, .territory-pane--academy .territory-example { color: #4b3e28; }
+.territory-pane--academy .territory-example { background: #bda47822; border-color: #8d754b66; }
+.territory-pane--academy .territory-example small { color: #455436; }
+.territory-pane--academy .territory-example .guardian-incorrect { color: #80483d !important; }
+.territory-pane--academy .territory-rules > div > span { color: #68522f; border-color: #97805b; }
+.capital-trial { animation: capital-assessment-open 650ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes capital-assessment-open { from { clip-path: inset(0 0 100%); } to { clip-path: inset(0); } }

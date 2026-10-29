@@ -1,24 +1,23 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Gift, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
 interface DailyRewardModalProps {
+  claimed: boolean;
   onClose: () => void;
   onClaimRewards: (coins: number, gems: number) => void;
 }
 
 export const DailyRewardModal: React.FC<DailyRewardModalProps> = ({
+  claimed,
   onClose,
   onClaimRewards,
 }) => {
-  const [claimed, setClaimed] = useState(false);
-
   const handleOpenChest = () => {
     if (claimed) return;
-    setClaimed(true);
     confetti({
       disableForReducedMotion: true,
       particleCount: 120,
